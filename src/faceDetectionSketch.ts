@@ -29,7 +29,7 @@ const FACE_MATCHER_THRESHOLD = 0.6;
 let port: any;
 
 export function resetState() {
-	sendState(RESET_STATE.toString());
+	sendState(RESET_STATE);
 }
 
 export async function getPorts() {
@@ -70,10 +70,6 @@ async function loadModels() {
 	await faceapi.loadSsdMobilenetv1Model(MODEL_URL);
 	await faceapi.loadFaceLandmarkModel(MODEL_URL);
 	await faceapi.loadFaceRecognitionModel(MODEL_URL);
-
-	// await faceapi.nets.ssdMobilenetv1.loadFromDisk(MODEL_URL);
-	// await faceapi.nets.faceLandmark68Net.loadFromDisk(MODEL_URL);
-	// await faceapi.nets.faceRecognitionNet.loadFromDisk(MODEL_URL);
 }
 
 async function detectStoredFaces() {
@@ -185,7 +181,7 @@ export const sketch: Sketch = (p5) => {
 			}
 
 			if (port) {
-				sendState(person.getId().toString());
+				sendState(person.getId());
 			}
 
 			previousState = currentState;
