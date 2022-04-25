@@ -2,6 +2,11 @@ import * as faceapi from 'face-api.js';
 import { Sketch } from 'react-p5-wrapper';
 import { Person } from './types/person';
 
+interface Navigator {
+	serial: any;
+	mediaworker: any;
+}
+
 const MODEL_URL = '/models';
 
 const people = [
@@ -33,7 +38,8 @@ export function resetState() {
 }
 
 export async function getPorts() {
-	const ports = await navigator.serial.getPorts();
+	const nav = window.navigator as unknown as Navigator;
+	const ports = await nav.serial.getPorts();
 
 	if (!ports.length) return;
 	port = ports[0];
