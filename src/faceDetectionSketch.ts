@@ -49,6 +49,29 @@ export async function getPorts() {
 	}
 }
 
+export async function requestPort() {
+	const nav = window.navigator as any;
+
+	// Prompt user to select any serial port.
+	port = await nav.serial.requestPort();
+
+	// Wait for the serial port to open.
+	await port.open({ baudRate: 9600 });
+
+	try {
+		// Wait for the serial port to open.
+		await port.open({ baudRate: 9600 });
+
+		startDetection = true;
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+export async function closePort() {
+	await port.close();
+}
+
 async function sendState(state: string | number) {
 	let message;
 	if (typeof state === 'number') message = state.toString();
