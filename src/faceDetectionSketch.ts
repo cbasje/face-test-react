@@ -1,11 +1,7 @@
 import * as faceapi from 'face-api.js';
 import { Sketch } from 'react-p5-wrapper';
+import { SerialPort } from 'serialport';
 import { Person } from './types/person';
-
-interface Navigator {
-	serial: any;
-	mediaworker: any;
-}
 
 const MODEL_URL = '/models';
 
@@ -31,27 +27,22 @@ let startDetection = false;
 const BOX_WIDTH_THRESHOLD = 100;
 const FACE_MATCHER_THRESHOLD = 0.6;
 
-let port: any;
+let port: SerialPort;
 
 export function resetState() {
 	sendState(RESET_STATE);
 }
 
 export async function getPorts() {
-	const nav = window.navigator as unknown as Navigator;
-	const ports = await nav.serial.getPorts();
+	port = new SerialPort('/dev/tty.usbmodem1301', {
+		baudRate: 9600,
+	});
 
-	if (!ports.length) return;
-	port = ports[0];
+	port.on('error', (err: Error) => {
+		console.log('Error: ', err.message);
+	});
 
-	try {
-		// Wait for the serial port to open.
-		await port.open({ baudRate: 9600 });
-
-		startDetection = true;
-	} catch (error) {
-		console.error(error);
-	}
+	startDetection = true;
 }
 
 async function sendState(state: string | number) {
@@ -59,17 +50,12 @@ async function sendState(state: string | number) {
 	if (typeof state === 'number') message = state.toString();
 	else message = state;
 
-	const textEncoder = new TextEncoderStream();
-	const writableStreamClosed = textEncoder.readable.pipeTo(port.writable);
-
-	const writer = textEncoder.writable.getWriter();
-
-	await writer.write(message);
-
-	await writer.close();
-	writer.releaseLock();
-
-	await writableStreamClosed;
+	port.write(message, (err: Error) => {
+		if (err) {
+			return console.log('Error on write: ', err.message);
+		}
+		console.log('message written');
+	});
 }
 
 async function loadModels() {
