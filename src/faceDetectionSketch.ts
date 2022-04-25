@@ -34,12 +34,9 @@ export function resetState() {
 }
 
 export async function getPorts() {
-	port = new SerialPort('/dev/tty.usbmodem1301', {
+	port = new SerialPort({
+		path: '/dev/tty.usbmodem1301',
 		baudRate: 9600,
-	});
-
-	port.on('error', (err: Error) => {
-		console.log('Error: ', err.message);
 	});
 
 	startDetection = true;
