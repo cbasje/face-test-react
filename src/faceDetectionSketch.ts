@@ -55,9 +55,6 @@ export async function requestPort() {
 	// Prompt user to select any serial port.
 	port = await nav.serial.requestPort();
 
-	// Wait for the serial port to open.
-	await port.open({ baudRate: 9600 });
-
 	try {
 		// Wait for the serial port to open.
 		await port.open({ baudRate: 9600 });
