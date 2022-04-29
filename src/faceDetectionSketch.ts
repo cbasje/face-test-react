@@ -56,7 +56,7 @@ export async function closePort() {
 	console.log('Port closed');
 }
 
-const throttledSendState = _.throttle(sendState, 50, {
+const throttledSendState = _.throttle(sendState, 1000, {
 	trailing: false,
 });
 
