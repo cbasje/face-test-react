@@ -59,6 +59,7 @@ export async function requestPort() {
 		// Wait for the serial port to open.
 		await port.open({ baudRate: 9600 });
 
+		console.log('Port opened');
 		startDetection = true;
 	} catch (error) {
 		console.error(error);
@@ -67,9 +68,15 @@ export async function requestPort() {
 
 export async function closePort() {
 	await port.close();
+	console.log('Port closed');
 }
 
 async function sendState(state: string | number) {
+	if (!port) {
+		console.error('No port found');
+		return;
+	}
+
 	let message;
 	if (typeof state === 'number') message = state.toString();
 	else message = state;
@@ -79,6 +86,7 @@ async function sendState(state: string | number) {
 
 	const writer = textEncoder.writable.getWriter();
 
+	console.log(`Sending: ${message}`);
 	await writer.write(message);
 
 	await writer.close();
@@ -201,9 +209,7 @@ export const sketch: Sketch = (p5) => {
 				currentLabel = person.getLabel();
 			}
 
-			if (port) {
-				sendState(person.getId());
-			}
+			sendState(person.getId());
 
 			previousState = currentState;
 		});
