@@ -4,23 +4,12 @@ import { Person } from './types/person';
 
 const MODEL_URL = '/models';
 
-const people = [
-	new Person(10, 'Dan', '#0000FF', 'images/dan.jpeg'),
-	new Person(11, 'Sebas', '#5DfDfD', 'images/sebas.jpeg'),
-	new Person(12, 'Sofia', '#FFFF00', 'images/sofia.jpeg'),
-	new Person(13, 'Zhouwen', '#9900F0', 'images/zhouwen.jpeg'),
-];
-
 let capture: any;
 
 let labeledFaceDescriptors: faceapi.LabeledFaceDescriptors[] = [];
 
-const DEFAULT_STATE = 0;
-const RESET_STATE = 1;
-
-let previousState: number, currentState: number;
-let previousLabel = '',
-	currentLabel = '';
+let previousAmount = 0,
+	currentAmount = 0;
 let startDetection = false;
 
 const BOX_WIDTH_THRESHOLD = 100;
@@ -29,7 +18,7 @@ const FACE_MATCHER_THRESHOLD = 0.6;
 let port: any;
 
 export function resetState() {
-	sendState(RESET_STATE);
+	sendState(0);
 }
 
 export async function getPorts() {
@@ -101,39 +90,9 @@ async function loadModels() {
 	await faceapi.loadFaceRecognitionModel(MODEL_URL);
 }
 
-async function detectStoredFaces() {
-	labeledFaceDescriptors = await Promise.all(
-		people.map(async (person) => {
-			const imgUrl = person.getImage();
-			const img = await faceapi.fetchImage(imgUrl);
-
-			// detect the face with the highest score in the image and compute it's landmarks and face descriptor
-			const fullFaceDescription = await faceapi
-				.detectSingleFace(img)
-				.withFaceLandmarks()
-				// .withAgeAndGender()
-				.withFaceDescriptor();
-
-			if (!fullFaceDescription) {
-				throw new Error(`No faces detected for ${person.getLabel()}`);
-			}
-
-			const faceDescriptors = [fullFaceDescription.descriptor];
-			return new faceapi.LabeledFaceDescriptors(
-				person.getLabel(),
-				faceDescriptors
-			);
-		})
-	).catch((error) => {
-		console.error(error);
-		return [];
-	});
-}
-
 export const sketch: Sketch = (p5) => {
 	p5.setup = async function () {
 		await loadModels();
-		await detectStoredFaces();
 
 		p5.createCanvas(1280, 720);
 		let constraints = {
@@ -158,6 +117,7 @@ export const sketch: Sketch = (p5) => {
 	p5.draw = async () => {
 		if (!capture || !startDetection) return;
 
+		p5.frameRate(5);
 		// p5.background(255);
 		// p5.image(capture, 0, 0);
 		p5.fill(0, 0, 0, 0);
@@ -167,46 +127,29 @@ export const sketch: Sketch = (p5) => {
 			.withFaceLandmarks()
 			.withFaceDescriptors();
 
-		const faceMatcher = new faceapi.FaceMatcher(
-			labeledFaceDescriptors,
-			FACE_MATCHER_THRESHOLD
-		);
-
-		const results = faceDescriptions.map((fd) =>
-			faceMatcher.findBestMatch(fd.descriptor)
-		);
-
 		p5.image(capture, 0, 0);
 
-		results.forEach((bestMatch, i) => {
-			const box = faceDescriptions[i].detection.box;
-			const text = bestMatch.toString();
+		faceDescriptions.forEach((description, i) => {
+			const box = description.detection.box;
 
-			drawBox(p5, box, text);
-
-			if (bestMatch.label == 'unknown') return;
-
-			const person = people.find((p) => p.getLabel() === bestMatch.label);
-			if (!person) return;
-
-			if (
-				bestMatch.label == previousLabel &&
-				previousState == currentState
-			)
-				return;
-			else {
-				previousLabel = bestMatch.label;
-				currentLabel = person.getLabel();
-			}
-
-			sendState(person.getId());
-
-			previousState = currentState;
+			drawBox(p5, box);
 		});
+
+		currentAmount = faceDescriptions.length;
+
+		if (previousAmount != currentAmount) {
+			sendState(currentAmount);
+		}
+
+		previousAmount = currentAmount;
 	};
 };
 
-function drawBox(p5: P5CanvasInstance, box: faceapi.Box, text: string) {
+function drawBox(
+	p5: P5CanvasInstance,
+	box: faceapi.Box,
+	text: string = 'unknown'
+) {
 	p5.textSize(15);
 	p5.strokeWeight(1);
 
