@@ -3,11 +3,14 @@ import { P5CanvasInstance, Sketch } from 'react-p5-wrapper';
 import _ from 'lodash';
 
 const MODEL_URL = '/models';
+const HISTORY_LENGTH = 20;
 
 let capture: any;
 
-let previousAmount = 0,
-	currentAmount = 0;
+let prevAmounts: number[] = [];
+let tempAmounts;
+let currentAmount = 0;
+
 let startDetection = false;
 
 let port: any;
@@ -56,8 +59,34 @@ export async function closePort() {
 	console.log('Port closed');
 }
 
-const throttledSendState = _.throttle(sendState, 1000, {
-	trailing: false,
+const updateState = (value: number) => {
+	if (prevAmounts.length == 1) {
+		prevAmounts.push(value);
+		currentAmount = value;
+		throttledSendState();
+		return;
+	} else if (prevAmounts.length >= HISTORY_LENGTH) {
+		tempAmounts = _.tail(prevAmounts);
+	} else {
+		tempAmounts = prevAmounts;
+	}
+
+	tempAmounts.push(value);
+
+	const prevMean = _.round(_.mean(prevAmounts));
+	const currentMean = _.round(_.mean(tempAmounts));
+
+	if (prevMean != currentMean) {
+		currentAmount = currentMean;
+		throttledSendState();
+	}
+
+	prevAmounts = tempAmounts;
+	console.log('Updated state');
+};
+
+const throttledSendState = _.throttle(sendState, 500, {
+	trailing: true,
 });
 
 async function sendState() {
@@ -118,7 +147,6 @@ export const sketch: Sketch = (p5) => {
 	p5.draw = async () => {
 		if (!capture || !startDetection) return;
 
-		p5.frameRate(20);
 		// p5.background(255);
 		// p5.image(capture, 0, 0);
 		p5.fill(0, 0, 0, 0);
@@ -136,29 +164,11 @@ export const sketch: Sketch = (p5) => {
 			drawBox(p5, box);
 		});
 
-		currentAmount = faceDescriptions.length;
-
-		if (previousAmount != currentAmount) {
-			throttledSendState();
-		}
-
-		previousAmount = currentAmount;
+		updateState(faceDescriptions.length);
 	};
 };
 
-function drawBox(
-	p5: P5CanvasInstance,
-	box: faceapi.Box,
-	text: string = 'unknown'
-) {
-	p5.textSize(15);
-	p5.strokeWeight(1);
-
-	const textX = box.x + box.width;
-	const textY = box.y + box.height;
-
-	p5.text(text, textX, textY);
-
+function drawBox(p5: P5CanvasInstance, box: faceapi.Box) {
 	p5.strokeWeight(4);
 	p5.stroke(255, 0, 0);
 	p5.rect(box.x, box.y, box.width, box.height);
