@@ -1,23 +1,18 @@
 import * as faceapi from 'face-api.js';
 import { P5CanvasInstance, Sketch } from 'react-p5-wrapper';
-import { Person } from './types/person';
 
 const MODEL_URL = '/models';
 
 let capture: any;
 
-let labeledFaceDescriptors: faceapi.LabeledFaceDescriptors[] = [];
-
 let previousAmount = 0,
 	currentAmount = 0;
 let startDetection = false;
 
-const BOX_WIDTH_THRESHOLD = 100;
-const FACE_MATCHER_THRESHOLD = 0.6;
-
 let port: any;
 
 export function resetState() {
+	currentAmount = 0;
 	sendState(0);
 }
 
@@ -117,7 +112,7 @@ export const sketch: Sketch = (p5) => {
 	p5.draw = async () => {
 		if (!capture || !startDetection) return;
 
-		p5.frameRate(5);
+		p5.frameRate(20);
 		// p5.background(255);
 		// p5.image(capture, 0, 0);
 		p5.fill(0, 0, 0, 0);
