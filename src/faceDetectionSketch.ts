@@ -136,7 +136,7 @@ export const sketch: Sketch = (p5) => {
 		await detectStoredFaces();
 
 		p5.createCanvas(1280, 720);
-		const constraints = {
+		let constraints = {
 			video: {
 				mandatory: {
 					minWidth: 1280,
@@ -146,8 +146,9 @@ export const sketch: Sketch = (p5) => {
 			},
 			audio: false,
 		};
-
-		capture = p5.createCapture(constraints, () => {});
+		capture = p5.createCapture(constraints, (stream) => {
+			console.log(stream);
+		});
 
 		capture.id('video_element');
 		capture.size(1280, 720);
