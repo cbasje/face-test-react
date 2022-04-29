@@ -1,5 +1,6 @@
 import * as faceapi from 'face-api.js';
 import { P5CanvasInstance, Sketch } from 'react-p5-wrapper';
+import _ from 'lodash';
 
 const MODEL_URL = '/models';
 
@@ -13,7 +14,7 @@ let port: any;
 
 export function resetState() {
 	currentAmount = 0;
-	sendState(0);
+	throttledSendState();
 }
 
 export async function getPorts() {
@@ -55,13 +56,18 @@ export async function closePort() {
 	console.log('Port closed');
 }
 
-async function sendState(state: string | number) {
+const throttledSendState = _.throttle(sendState, 50, {
+	trailing: false,
+});
+
+async function sendState() {
 	if (!port) {
 		console.error('No port found');
 		return;
 	}
 
-	let message;
+	let message,
+		state = currentAmount;
 	if (typeof state === 'number') message = state.toString();
 	else message = state;
 
@@ -133,7 +139,7 @@ export const sketch: Sketch = (p5) => {
 		currentAmount = faceDescriptions.length;
 
 		if (previousAmount != currentAmount) {
-			sendState(currentAmount);
+			throttledSendState();
 		}
 
 		previousAmount = currentAmount;
