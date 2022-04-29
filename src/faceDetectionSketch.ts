@@ -1,5 +1,5 @@
 import * as faceapi from 'face-api.js';
-import { Sketch } from 'react-p5-wrapper';
+import { P5CanvasInstance, Sketch } from 'react-p5-wrapper';
 import { Person } from './types/person';
 
 const MODEL_URL = '/models';
@@ -182,18 +182,7 @@ export const sketch: Sketch = (p5) => {
 			const box = faceDescriptions[i].detection.box;
 			const text = bestMatch.toString();
 
-			p5.textSize(15);
-			p5.strokeWeight(1);
-
-			const textX = box.x + box.width;
-			const textY = box.y + box.height;
-
-			const textWidth = p5.textWidth(text);
-			p5.text(text, textX, textY);
-
-			p5.strokeWeight(4);
-			p5.stroke(255, 0, 0);
-			p5.rect(box.x, box.y, box.width, box.height);
+			drawBox(p5, box, text);
 
 			if (bestMatch.label == 'unknown') return;
 
@@ -216,3 +205,17 @@ export const sketch: Sketch = (p5) => {
 		});
 	};
 };
+
+function drawBox(p5: P5CanvasInstance, box: faceapi.Box, text: string) {
+	p5.textSize(15);
+	p5.strokeWeight(1);
+
+	const textX = box.x + box.width;
+	const textY = box.y + box.height;
+
+	p5.text(text, textX, textY);
+
+	p5.strokeWeight(4);
+	p5.stroke(255, 0, 0);
+	p5.rect(box.x, box.y, box.width, box.height);
+}
