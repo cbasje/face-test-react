@@ -1,62 +1,27 @@
 import * as faceapi from 'face-api.js';
 import { P5CanvasInstance, Sketch } from 'react-p5-wrapper';
 import _ from 'lodash';
+import { io } from 'socket.io-client';
 
 const MODEL_URL = '/models';
 const HISTORY_LENGTH = 20;
 
 let capture: any;
+let startDetection: boolean;
 
 let prevAmounts: number[] = [];
 let tempAmounts;
 let currentAmount = 0;
 
-let startDetection = false;
-
-let port: any;
+const id = '9d6af4c7-a4a0-4f15-977f-bb505bab8061';
+const socket = io('https://localhost:3000/', {
+	transports: ['websocket', 'polling'],
+	query: { id },
+});
 
 export function resetState() {
 	currentAmount = 0;
 	throttledSendState();
-}
-
-export async function getPorts() {
-	const nav = window.navigator as any;
-	const ports = await nav.serial.getPorts();
-
-	if (!ports.length) return;
-	port = ports[0];
-
-	try {
-		// Wait for the serial port to open.
-		await port.open({ baudRate: 9600 });
-
-		startDetection = true;
-	} catch (error) {
-		console.error(error);
-	}
-}
-
-export async function requestPort() {
-	const nav = window.navigator as any;
-
-	// Prompt user to select any serial port.
-	port = await nav.serial.requestPort();
-
-	try {
-		// Wait for the serial port to open.
-		await port.open({ baudRate: 9600 });
-
-		console.log('Port opened');
-		startDetection = true;
-	} catch (error) {
-		console.error(error);
-	}
-}
-
-export async function closePort() {
-	await port.close();
-	console.log('Port closed');
 }
 
 const updateState = (value: number) => {
@@ -82,36 +47,19 @@ const updateState = (value: number) => {
 	}
 
 	prevAmounts = tempAmounts;
-	console.log('Updated state');
 };
 
-const throttledSendState = _.throttle(sendState, 500, {
+const throttledSendState = _.throttle(sendState, 100, {
 	trailing: true,
 });
 
 async function sendState() {
-	if (!port) {
-		console.error('No port found');
-		return;
-	}
-
 	let message,
 		state = currentAmount;
 	if (typeof state === 'number') message = state.toString();
 	else message = state;
 
-	const textEncoder = new TextEncoderStream();
-	const writableStreamClosed = textEncoder.readable.pipeTo(port.writable);
-
-	const writer = textEncoder.writable.getWriter();
-
-	console.log(`Sending: ${message}`);
-	await writer.write(message);
-
-	await writer.close();
-	writer.releaseLock();
-
-	await writableStreamClosed;
+	socket?.emit('send-state', message);
 }
 
 async function loadModels() {
@@ -142,6 +90,8 @@ export const sketch: Sketch = (p5) => {
 		capture.id('video_element');
 		capture.size(1280, 720);
 		capture.hide();
+
+		startDetection = true;
 	};
 
 	p5.draw = async () => {
