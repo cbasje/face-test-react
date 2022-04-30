@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { io } from 'socket.io-client';
 
 const MODEL_URL = '/models';
-const HISTORY_LENGTH = 20;
+const HISTORY_LENGTH = 10;
 
 let capture: any;
 let startDetection: boolean;
@@ -87,8 +87,8 @@ export const sketch: Sketch = (p5) => {
 			console.log(stream);
 		});
 
-		capture.id('video_element');
-		capture.size(1280, 720);
+		capture.id('video');
+		// capture.size(1280, 720);
 		capture.hide();
 
 		startDetection = true;
