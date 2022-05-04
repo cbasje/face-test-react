@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { io } from 'socket.io-client';
 
 const MODEL_URL = '/models';
-const HISTORY_LENGTH = 10;
+const HISTORY_LENGTH = 7;
 
 let capture: any;
 let startDetection: boolean;
