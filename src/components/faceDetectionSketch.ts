@@ -24,6 +24,15 @@ export function resetState() {
 	throttledSendState();
 }
 
+export function updateDetectionFromUI(value: boolean) {
+	startDetection = value;
+}
+
+export function updateStateFromUI(value: number) {
+	currentAmount = value;
+	throttledSendState();
+}
+
 const updateState = (value: number) => {
 	if (prevAmounts.length == 1) {
 		prevAmounts.push(value);
