@@ -2,37 +2,23 @@ import { P5CanvasInstance, Sketch } from 'react-p5-wrapper';
 import _ from 'lodash';
 import { io, Socket } from 'socket.io-client';
 
-let startDetection: boolean;
-
 let currentAmount = 0;
 
 const id = '9d6af4c7-a4a0-4f15-977f-bb505bab8061';
-let socket: Socket;
-
-export function setIoClient(hostname = 'https://localhost:3000/') {
-	io(hostname, {
-		transports: ['websocket', 'polling'],
-		query: { id },
-	});
-}
+let socket: Socket = io('https://localhost:3000/', {
+	transports: ['websocket', 'polling'],
+	query: { id },
+});
 
 export function resetState() {
 	currentAmount = 0;
-	throttledSendState();
-}
-
-export function updateDetectionFromUI(value: boolean) {
-	startDetection = value;
+	sendState();
 }
 
 export function updateStateFromUI(value: number) {
 	currentAmount = value;
-	throttledSendState();
+	sendState();
 }
-
-const throttledSendState = _.throttle(sendState, 100, {
-	trailing: true,
-});
 
 async function sendState() {
 	let message,
