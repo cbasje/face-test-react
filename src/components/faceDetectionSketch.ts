@@ -17,8 +17,8 @@ let prevAmounts: number[] = [];
 let tempAmounts;
 let currentAmount = 0;
 
-let videoWidth = 1280,
-	videoHeight = 960;
+let videoWidth = 1280 / 2,
+	videoHeight = 960 / 2;
 
 const id = '9d6af4c7-a4a0-4f15-977f-bb505bab8061';
 const socket = io('https://localhost:3000/', {
@@ -88,14 +88,17 @@ export const sketch: Sketch = (p5) => {
 	p5.setup = async function () {
 		await loadModels();
 
-		p5.createCanvas(videoWidth, videoHeight);
+		const canvas = p5.createCanvas(videoWidth, videoHeight);
+		canvas.id('canvas');
+		canvas.removeAttribute('style');
+
 		let constraints = {
 			video: {
 				mandatory: {
 					minWidth: videoWidth,
 					minHeight: videoHeight,
 				},
-				optional: [{ maxFrameRate: 10, facingMode: 'user' }],
+				optional: [{ maxFrameRate: 15, facingMode: 'user' }],
 			},
 			audio: false,
 		};
@@ -104,7 +107,6 @@ export const sketch: Sketch = (p5) => {
 		});
 
 		capture.id('video');
-		// capture.size(videoWidth, videoHeight);
 		capture.hide();
 
 		graphics = p5.createGraphics(videoWidth, videoHeight);
