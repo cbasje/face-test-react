@@ -1,5 +1,5 @@
 import * as faceapi from 'face-api.js';
-import { P5CanvasInstance, Sketch } from 'react-p5-wrapper';
+import { P5CanvasInstance, Sketch, SketchProps } from 'react-p5-wrapper';
 import { Graphics } from 'p5';
 import _ from 'lodash';
 import { io } from 'socket.io-client';
@@ -22,25 +22,11 @@ let currentAmount = 0;
 let videoWidth = 1280 / 2,
 	videoHeight = 960 / 2;
 
-const url = import.meta.env.DEV
-	? 'https://localhost:3000/'
-	: 'https://face-test-cbasje.herokuapp.com/';
-const id = '9d6af4c7-a4a0-4f15-977f-bb505bab8061';
-const socket = io(url, {
-	transports: ['websocket', 'polling'],
-	query: { id },
-});
+let emitToSocket: (event: string, payload: any) => void;
 
-useEffect(() => {
-	socket.on('receive-message', (message: string) => {
-		console.log(message);
-		showNotification({ message });
-	});
-
-	return () => {
-		socket.off('receive-message');
-	};
-}, [socket]);
+type MySketchProps = SketchProps & {
+	emitToSocket: (event: string, payload: any) => void;
+};
 
 export function resetState() {
 	currentAmount = 0;
@@ -91,7 +77,7 @@ async function sendState() {
 	if (typeof state === 'number') message = state.toString();
 	else message = state;
 
-	socket?.emit('send-state', message);
+	emitToSocket('send-state', message);
 }
 
 async function loadModels() {
@@ -100,7 +86,7 @@ async function loadModels() {
 	await faceapi.loadFaceRecognitionModel(MODEL_URL);
 }
 
-export const sketch: Sketch = (p5) => {
+export const sketch: Sketch<MySketchProps> = (p5) => {
 	p5.setup = async function () {
 		await loadModels();
 
@@ -128,6 +114,12 @@ export const sketch: Sketch = (p5) => {
 		graphics = p5.createGraphics(videoWidth, videoHeight);
 
 		startDetection = true;
+	};
+
+	p5.updateWithProps = (props) => {
+		if (props.emitToSocket) {
+			emitToSocket = props.emitToSocket;
+		}
 	};
 
 	p5.draw = async () => {
@@ -167,7 +159,7 @@ export const sketch: Sketch = (p5) => {
 	});
 };
 
-function drawBox(p5: P5CanvasInstance, box: faceapi.Box) {
+function drawBox(p5: P5CanvasInstance<MySketchProps>, box: faceapi.Box) {
 	p5.strokeWeight(4);
 	p5.stroke(255, 0, 0);
 	p5.rect(box.x, box.y, box.width, box.height);
