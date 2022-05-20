@@ -15,16 +15,20 @@ function App() {
 
 	const { socket } = useSocket();
 
+	const addMessage = (message: string) => {
+		console.log(message);
+		showNotification({ message });
+	};
+
 	useEffect(() => {
-		socket?.on('receive-message', (message: string) => {
-			console.log(message);
-			showNotification({ message });
-		});
+		if (socket == null) return;
+
+		socket.on('receive-message', addMessage);
 
 		return () => {
-			socket?.off('receive-message');
+			socket.off('receive-message');
 		};
-	}, [socket]);
+	}, [socket, addMessage]);
 
 	return (
 		<SocketProvider id={id}>
