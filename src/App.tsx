@@ -3,12 +3,16 @@ import {
 	NotificationsProvider,
 	showNotification,
 } from '@mantine/notifications';
-import { useSocket } from './contexts/SocketContext';
+import { SocketProvider, useSocket } from './contexts/SocketContext';
 import { useEffect } from 'react';
 import { ReactP5Wrapper } from 'react-p5-wrapper';
 import { sketch } from './components/faceDetectionSketch';
+import { useLocalStorage } from '@mantine/hooks';
+import { v4 as uuidv4 } from 'uuid';
 
 function App() {
+	const [id, setId] = useLocalStorage({ key: 'id', defaultValue: uuidv4() });
+
 	const { socket } = useSocket();
 
 	useEffect(() => {
@@ -23,14 +27,16 @@ function App() {
 	}, [socket]);
 
 	return (
-		<NotificationsProvider>
-			<ReactP5Wrapper
-				sketch={sketch}
-				emitToSocket={(event: string, payload: any) => {
-					socket?.emit(event, payload);
-				}}
-			/>
-		</NotificationsProvider>
+		<SocketProvider id={id}>
+			<NotificationsProvider>
+				<ReactP5Wrapper
+					sketch={sketch}
+					emitToSocket={(event: string, payload: any) => {
+						socket?.emit(event, payload);
+					}}
+				/>
+			</NotificationsProvider>
+		</SocketProvider>
 	);
 }
 
