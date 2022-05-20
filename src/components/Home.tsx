@@ -7,8 +7,19 @@ import { useSocket } from '../contexts/SocketContext';
 function Home() {
 	const { socket } = useSocket();
 
+	const speakName = (text: string, lang: string = 'en-GB') => {
+		if ('speechSynthesis' in window) {
+			let utterance = new SpeechSynthesisUtterance(text);
+			utterance.lang = lang;
+			window.speechSynthesis.speak(utterance);
+		} else {
+			console.error('Browser not supported');
+		}
+	};
+
 	const addMessage = (message: string) => {
-		console.log(message);
+		speakName(message);
+
 		showNotification({
 			disallowClose: true,
 			autoClose: 5000,
