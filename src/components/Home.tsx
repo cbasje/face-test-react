@@ -9,7 +9,14 @@ function Home() {
 
 	const addMessage = (message: string) => {
 		console.log(message);
-		showNotification({ message });
+		showNotification({
+			disallowClose: true,
+			autoClose: 5000,
+			// title: "You've been compromised",
+			message,
+			color: 'red',
+			// icon: <Cross1Icon />,
+		});
 	};
 
 	useEffect(() => {
