@@ -3,6 +3,8 @@ import { P5CanvasInstance, Sketch } from 'react-p5-wrapper';
 import { Graphics } from 'p5';
 import _ from 'lodash';
 import { io } from 'socket.io-client';
+import { useEffect } from 'react';
+import { showNotification } from '@mantine/notifications';
 
 const MODEL_URL = '/models';
 const HISTORY_LENGTH = 7;
@@ -20,11 +22,25 @@ let currentAmount = 0;
 let videoWidth = 1280 / 2,
 	videoHeight = 960 / 2;
 
+const url = import.meta.env.DEV
+	? 'https://localhost:3000/'
+	: 'https://face-test-cbasje.herokuapp.com/';
 const id = '9d6af4c7-a4a0-4f15-977f-bb505bab8061';
-const socket = io('https://localhost:3000/', {
+const socket = io(url, {
 	transports: ['websocket', 'polling'],
 	query: { id },
 });
+
+useEffect(() => {
+	socket.on('receive-message', (message: string) => {
+		console.log(message);
+		showNotification({ message });
+	});
+
+	return () => {
+		socket.off('receive-message');
+	};
+}, [socket]);
 
 export function resetState() {
 	currentAmount = 0;

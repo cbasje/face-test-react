@@ -8,7 +8,9 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
-		"@mantine/hooks": "^4.2.1",
+		"@mantine/core": "^4.2.5",
+		"@mantine/hooks": "^4.2.5",
+		"@mantine/notifications": "^4.2.5",
 		"@tensorflow-models/coco-ssd": "^2.2.2",
 		"@tensorflow/tfjs-converter": "^3.16.0",
 		"@tensorflow/tfjs-core": "^3.16.0",
