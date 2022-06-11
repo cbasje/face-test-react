@@ -36,7 +36,7 @@ function Conversation() {
 	const [object, setObject] = useRecoilState(objectState);
 	const [door, setDoor] = useRecoilState(doorState);
 
-	const messages = useRecoilValue(messagesState);
+	const messages = useRecoilValue(messagesState) ?? [];
 
 	const { openDoor, closeDoor, sendWelcome } = useSocket();
 
@@ -182,16 +182,19 @@ function Conversation() {
 					<Group position="apart">
 						<Title order={4}>Conversation</Title>
 
-						<ActionIcon
-							title="Repeat previous message"
-							color="gray"
-							onClick={() => {
-								const msg = messages[selectedMessage];
-								if (!msg.preventSpeak) speakMessage(msg.text);
-							}}
-						>
-							<ArrowClockwise size={20} weight="bold" />
-						</ActionIcon>
+						{selectedMessage !== 0 && (
+							<ActionIcon
+								title="Repeat previous message"
+								color="gray"
+								onClick={() => {
+									const msg = messages[selectedMessage];
+									if (!msg.preventSpeak)
+										speakMessage(msg.text);
+								}}
+							>
+								<ArrowClockwise size={20} weight="bold" />
+							</ActionIcon>
+						)}
 					</Group>
 
 					{messages[selectedMessage].children?.map((child, index) => (
