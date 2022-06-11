@@ -1,11 +1,14 @@
 import {
+	ActionIcon,
 	Button,
 	Grid,
+	Group,
 	NumberInput,
 	SegmentedControl,
 	Select,
 	Stack,
 	TextInput,
+	Title,
 } from '@mantine/core';
 import { useState } from 'react';
 import { useSocket } from '../contexts/SocketContext';
@@ -22,6 +25,7 @@ import {
 	objectState,
 } from '../store/atoms';
 import { messagesState } from '../store/selectors';
+import { ArrowClockwise } from 'phosphor-react';
 
 function Conversation() {
 	const [selectedMessage, setSelectedMessage] = useState(0);
@@ -102,108 +106,132 @@ function Conversation() {
 	};
 
 	return (
-		<Grid grow justify="center">
-			<Grid.Col span={12}>
-				<SegmentedControl
-					value={conv}
-					onChange={(value) => {
-						setConv(value as ConversationType);
-						resetMessages();
-					}}
-					data={[
-						{ label: 'Learning', value: 'learn' },
-						{ label: 'Training', value: 'train' },
-						{ label: 'Final', value: 'final' },
-					]}
-				/>
-			</Grid.Col>
+		<Stack>
+			<Title order={2}>Conversation controls</Title>
 
-			<Grid.Col span={6}>
-				<TextInput
-					placeholder="Name"
-					label="Name"
-					value={name}
-					onChange={(e) => setName(e.target.value)}
-					required
-				/>
-			</Grid.Col>
-			<Grid.Col span={6}>
-				<NumberInput
-					placeholder="Height"
-					label="Height"
-					value={height}
-					onChange={(e) => setHeight(e!)}
-					min={150}
-					max={220}
-					required
-				/>
-			</Grid.Col>
+			<Grid grow justify="center">
+				<Grid.Col span={12}>
+					<SegmentedControl
+						value={conv}
+						onChange={(value) => {
+							setConv(value as ConversationType);
+							resetMessages();
+						}}
+						data={[
+							{ label: 'Learning', value: 'learn' },
+							{ label: 'Training', value: 'train' },
+							{ label: 'Final', value: 'final' },
+						]}
+					/>
+				</Grid.Col>
 
-			<Grid.Col span={6}>
-				<Select
-					label="Object detected"
-					value={object}
-					onChange={(e) => setObject(e as ObjectType)}
-					data={Object.values(ObjectType).map((o) => ({
-						value: o,
-						label: getObjectTypeLabel(o),
-					}))}
-				/>
-			</Grid.Col>
+				<Grid.Col span={6}>
+					<TextInput
+						placeholder="Name"
+						label="Name"
+						value={name}
+						onChange={(e) => setName(e.target.value)}
+						required
+					/>
+				</Grid.Col>
+				<Grid.Col span={6}>
+					<NumberInput
+						placeholder="Height"
+						label="Height"
+						value={height}
+						onChange={(e) => setHeight(e!)}
+						min={150}
+						max={220}
+						required
+					/>
+				</Grid.Col>
 
-			<Grid.Col span={6}>
-				<Select
-					label="Door"
-					value={door}
-					onChange={(e) => setDoor(e as Door)}
-					data={Object.values(Door).map((d) => ({
-						value: d,
-						label: getDoorLabel(d),
-					}))}
-				/>
-			</Grid.Col>
+				<Grid.Col span={6}>
+					<Select
+						label="Object detected"
+						value={object}
+						onChange={(e) => setObject(e as ObjectType)}
+						data={Object.values(ObjectType).map((o) => ({
+							value: o,
+							label: getObjectTypeLabel(o),
+						}))}
+					/>
+				</Grid.Col>
 
-			<Stack
-				styles={(theme) => ({
-					root: {
-						marginTop: theme.spacing.xl,
-						padding: theme.spacing.xs,
-						width: '100%',
-					},
-				})}
-			>
-				{messages[selectedMessage].children?.map((child, index) => (
-					<Button
-						color={
-							messages[child].preventSpeak ? 'pink' : 'primary'
-						}
-						styles={(theme) => ({
-							root: {
-								width: '100%',
-								height: 'auto',
-								paddingBlock: theme.spacing.xs,
-								lineHeight: 'normal',
-							},
-							label: { whiteSpace: 'normal' },
-						})}
-						onClick={() => clickMessage(messages[child])}
-						key={messages[child].id}
-					>
-						{messages[child].text}
-					</Button>
-				))}
+				<Grid.Col span={6}>
+					<Select
+						label="Door"
+						value={door}
+						onChange={(e) => setDoor(e as Door)}
+						data={Object.values(Door).map((d) => ({
+							value: d,
+							label: getDoorLabel(d),
+						}))}
+					/>
+				</Grid.Col>
 
-				{!messages[selectedMessage].children && (
-					<Button
-						color="gray"
-						type="reset"
-						onClick={() => resetMessages()}
-					>
-						Reset conversation
-					</Button>
-				)}
-			</Stack>
-		</Grid>
+				<Stack
+					styles={(theme) => ({
+						root: {
+							marginTop: theme.spacing.xl,
+							padding: theme.spacing.xs,
+							width: '100%',
+						},
+					})}
+				>
+					<Group position="apart">
+						<Title order={4}>Conversation</Title>
+
+						<ActionIcon
+							title="Repeat previous message"
+							color="gray"
+							onClick={() => {
+								const msg = messages[selectedMessage];
+								if (!msg.preventSpeak) speakMessage(msg.text);
+							}}
+						>
+							<ArrowClockwise size={20} weight="bold" />
+						</ActionIcon>
+					</Group>
+
+					{messages[selectedMessage].children?.map((child, index) => (
+						<Button
+							color={
+								messages[child].preventSpeak
+									? 'pink'
+									: 'primary'
+							}
+							styles={(theme) => ({
+								root: {
+									width: '100%',
+									height: 'auto',
+									paddingBlock: theme.spacing.xs,
+									lineHeight: 'normal',
+								},
+								label: { whiteSpace: 'normal' },
+							})}
+							onClick={() => clickMessage(messages[child])}
+							key={messages[child].id}
+						>
+							{messages[child].text}
+						</Button>
+					))}
+
+					{!messages[selectedMessage].children && (
+						<Button
+							color="gray"
+							type="reset"
+							onClick={() => resetMessages()}
+							leftIcon={
+								<ArrowClockwise size={20} weight="bold" />
+							}
+						>
+							Reset conversation
+						</Button>
+					)}
+				</Stack>
+			</Grid>
+		</Stack>
 	);
 }
 

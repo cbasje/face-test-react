@@ -8,18 +8,10 @@ function Home() {
 			<Container size="xs">
 				<Tabs grow position="center">
 					<Tabs.Tab label="Conversation">
-						<Stack>
-							<Title order={3}>Conversation</Title>
-
-							<Conversation />
-						</Stack>
+						<Conversation />
 					</Tabs.Tab>
 					<Tabs.Tab label="Manual control">
-						<Stack>
-							<Title order={3}>Manual control</Title>
-
-							<ManualControl />
-						</Stack>
+						<ManualControl />
 					</Tabs.Tab>
 				</Tabs>
 			</Container>
