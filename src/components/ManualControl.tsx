@@ -1,8 +1,12 @@
 import { Button, Grid } from '@mantine/core';
+import { useRecoilValue } from 'recoil';
+import { doorState } from '../atoms';
 import { useSocket } from '../contexts/SocketContext';
 
 function ManualControl() {
 	const { openDoor, closeDoor } = useSocket();
+
+	const door = useRecoilValue(doorState);
 
 	return (
 		<Grid grow justify="center">

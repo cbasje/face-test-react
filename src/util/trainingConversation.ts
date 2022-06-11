@@ -1,3 +1,4 @@
+import { useSocket } from '../contexts/SocketContext';
 import { Door, getDoorLabel } from '../types/door';
 import { Message } from '../types/message';
 import { getObjectTypeLabel, ObjectType } from '../types/object';
@@ -5,10 +6,7 @@ import { getObjectTypeLabel, ObjectType } from '../types/object';
 export const messages = (
 	name: string,
 	door: Door,
-	object: ObjectType,
-	sendWelcome: () => void,
-	closeDoor: (door: Door) => void,
-	openDoor: (door: Door) => void
+	object: ObjectType
 ): { [id: number]: Message } => ({
 	0: {
 		id: 0,
@@ -19,8 +17,8 @@ export const messages = (
 		id: 1,
 		text: `Hey, ${name}!`,
 		children: [2],
-		callback: () => {
-			sendWelcome();
+		callback: {
+			functionName: 'sendWelcome',
 		},
 	},
 	2: {
@@ -32,8 +30,8 @@ export const messages = (
 		id: 3,
 		text: `I'll open the ${getDoorLabel(door)} for you.`,
 		children: [4, 5, 6],
-		callback: () => {
-			openDoor(door);
+		callback: {
+			functionName: 'openDoor',
 		},
 	},
 	4: {
@@ -41,8 +39,9 @@ export const messages = (
 		text: 'Open front door',
 		children: [7],
 		preventSpeak: true,
-		callback: () => {
-			if (door !== Door.Front) openDoor(Door.Front);
+		callback: {
+			functionName: 'changeDoor',
+			args: [Door.Front],
 		},
 	},
 	5: {
@@ -50,8 +49,9 @@ export const messages = (
 		text: 'Open back door',
 		children: [7],
 		preventSpeak: true,
-		callback: () => {
-			if (door !== Door.Back) openDoor(Door.Back);
+		callback: {
+			functionName: 'changeDoor',
+			args: [Door.Back],
 		},
 	},
 	6: {
@@ -59,8 +59,9 @@ export const messages = (
 		text: 'Open trunk',
 		children: [7],
 		preventSpeak: true,
-		callback: () => {
-			if (door !== Door.Trunk) openDoor(Door.Trunk);
+		callback: {
+			functionName: 'changeDoor',
+			args: [Door.Trunk],
 		},
 	},
 	7: {
@@ -68,9 +69,8 @@ export const messages = (
 		text: 'Close the door',
 		children: [8],
 		preventSpeak: true,
-		callback: () => {
-			// FIXME: Not the right door
-			closeDoor(door);
+		callback: {
+			functionName: 'closeDoor',
 		},
 	},
 	8: {
@@ -83,16 +83,18 @@ export const messages = (
 		text: 'Yes',
 		children: [10],
 		preventSpeak: true,
-		callback: () => {
-			openDoor(Door.Front);
+		callback: {
+			functionName: 'openDoor',
+			args: [Door.Front],
 		},
 	},
 	10: {
 		id: 10,
 		text: 'Close the front door',
 		preventSpeak: true,
-		callback: () => {
-			closeDoor(Door.Front);
+		callback: {
+			functionName: 'closeDoor',
+			args: [Door.Front],
 		},
 	},
 	11: {

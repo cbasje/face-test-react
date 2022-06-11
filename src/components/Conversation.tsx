@@ -7,42 +7,32 @@ import {
 	Stack,
 	TextInput,
 } from '@mantine/core';
-import { useLocalStorage } from '@mantine/hooks';
 import { useState } from 'react';
 import { useSocket } from '../contexts/SocketContext';
 import { Door, getDoorLabel } from '../types/door';
 import { Message } from '../types/message';
 import { getObjectTypeLabel, ObjectType } from '../types/object';
-import { messages as learningConversation } from '../util/learningConversation';
-import { messages as trainingConversation } from '../util/trainingConversation';
-import { messages as finalConversation } from '../util/finalConversation';
+import { ConversationType } from '../types/conversation';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import {
+	conversationState,
+	doorState,
+	heightState,
+	nameState,
+	objectState,
+} from '../atoms';
+import { messagesState } from '../selectors';
 
 function Conversation() {
-	const [name, setName] = useLocalStorage<string>({
-		key: 'name',
-		defaultValue: '',
-	});
-	const [height, setHeight] = useLocalStorage<number>({
-		key: 'height',
-		defaultValue: 0,
-	});
-	const [object, setObject] = useLocalStorage<ObjectType>({
-		key: 'object',
-		defaultValue: ObjectType.Baby,
-	});
-	const [door, setDoor] = useLocalStorage({
-		key: 'door',
-		defaultValue: Door.Front,
-	});
-
-	const [conv, setConv] = useLocalStorage<string>({
-		key: 'conv',
-		defaultValue: 'learn',
-	});
 	const [selectedMessage, setSelectedMessage] = useState(0);
-	const [messages, setMessages] = useState(
-		learningConversation(height, name)
-	);
+
+	const [conv, setConv] = useRecoilState(conversationState);
+	const [name, setName] = useRecoilState(nameState);
+	const [height, setHeight] = useRecoilState(heightState);
+	const [object, setObject] = useRecoilState(objectState);
+	const [door, setDoor] = useRecoilState(doorState);
+
+	const messages = useRecoilValue(messagesState);
 
 	const { openDoor, closeDoor, sendWelcome } = useSocket();
 
@@ -60,7 +50,44 @@ function Conversation() {
 		setSelectedMessage(message.id);
 		if (!message.preventSpeak) speakMessage(message.text);
 
-		if (!!message.callback) message.callback();
+		if (!!message.callback) {
+			switch (message.callback.functionName) {
+				case 'sendWelcome':
+					sendWelcome();
+					break;
+				case 'openDoor':
+					openDoor(
+						message.callback.args
+							? (message.callback.args[0] as Door)
+							: door
+					);
+					break;
+				case 'changeDoor':
+					if (message.callback.args) {
+						const newDoor = message.callback.args[0] as Door;
+						setDoor(newDoor);
+
+						if (newDoor !== door) {
+							closeDoor(door);
+							speakMessage(
+								'Switching to door ' + getDoorLabel(newDoor)
+							);
+							openDoor(newDoor);
+						}
+					}
+
+					break;
+				case 'closeDoor':
+					openDoor(
+						message.callback.args
+							? (message.callback.args[0] as Door)
+							: door
+					);
+					break;
+				default:
+					break;
+			}
+		}
 	};
 
 	const resetMessages = () => {
@@ -73,27 +100,8 @@ function Conversation() {
 				<SegmentedControl
 					value={conv}
 					onChange={(value) => {
-						setConv(value);
+						setConv(value as ConversationType);
 						resetMessages();
-
-						if (value === 'learn') {
-							setMessages(learningConversation(height, name));
-						}
-						if (value === 'train') {
-							setMessages(
-								trainingConversation(
-									name,
-									door,
-									object,
-									sendWelcome,
-									closeDoor,
-									openDoor
-								)
-							);
-						}
-						if (value === 'final') {
-							setMessages(finalConversation());
-						}
 					}}
 					data={[
 						{ label: 'Learning', value: 'learn' },
@@ -118,6 +126,8 @@ function Conversation() {
 					label="Height"
 					value={height}
 					onChange={(e) => setHeight(e!)}
+					min={150}
+					max={220}
 					required
 				/>
 			</Grid.Col>
