@@ -1,7 +1,7 @@
 import { atom } from 'recoil';
-import { ConversationType } from './types/conversation';
-import { Door } from './types/door';
-import { ObjectType } from './types/object';
+import { ConversationType } from '../types/conversation';
+import { Door } from '../types/door';
+import { ObjectType } from '../types/object';
 
 export const nameState = atom({
 	key: 'nameState',

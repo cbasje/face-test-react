@@ -1,6 +1,6 @@
 import { Button, Grid, Select } from '@mantine/core';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { doorState } from '../atoms';
+import { doorState } from '../store/atoms';
 import { useSocket } from '../contexts/SocketContext';
 import { Door, getDoorLabel } from '../types/door';
 

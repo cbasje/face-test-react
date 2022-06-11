@@ -20,8 +20,8 @@ import {
 	heightState,
 	nameState,
 	objectState,
-} from '../atoms';
-import { messagesState } from '../selectors';
+} from '../store/atoms';
+import { messagesState } from '../store/selectors';
 
 function Conversation() {
 	const [selectedMessage, setSelectedMessage] = useState(0);
@@ -84,7 +84,14 @@ function Conversation() {
 							: door
 					);
 					break;
+				case 'sendLoading':
+					break;
+				case 'sendConfirmation':
+					break;
+				case 'startPairing':
+					break;
 				default:
+					console.warn('Unsupported callback function');
 					break;
 			}
 		}

@@ -6,10 +6,10 @@ import {
 	nameState,
 	objectState,
 } from './atoms';
-import { ConversationType } from './types/conversation';
-import { messages as learningConversation } from './util/learningConversation';
-import { messages as trainingConversation } from './util/trainingConversation';
-import { messages as finalConversation } from './util/finalConversation';
+import { ConversationType } from '../types/conversation';
+import { messages as learningConversation } from '../util/learningConversation';
+import { messages as trainingConversation } from '../util/trainingConversation';
+import { messages as finalConversation } from '../util/finalConversation';
 
 export const messagesState = selector({
 	key: 'messagesState',

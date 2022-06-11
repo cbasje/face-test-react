@@ -9,6 +9,13 @@ export interface Message {
 }
 
 interface MessageCallback {
-	functionName: 'sendWelcome' | 'openDoor' | 'changeDoor' | 'closeDoor';
+	functionName:
+		| 'sendWelcome'
+		| 'openDoor'
+		| 'changeDoor'
+		| 'closeDoor'
+		| 'sendLoading'
+		| 'sendConfirmation'
+		| 'startPairing';
 	args?: string[] | number[] | Door[];
 }
