@@ -70,7 +70,7 @@ function Conversation() {
 						if (newDoor !== door) {
 							closeDoor(door);
 							speakMessage(
-								'Switching to door ' + getDoorLabel(newDoor)
+								'Switching to the ' + getDoorLabel(newDoor)
 							);
 							openDoor(newDoor);
 						}
