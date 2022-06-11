@@ -89,6 +89,20 @@ function Home() {
 			>
 				Final
 			</button>
+			<button
+				onClick={() => {
+					openDoor(door);
+				}}
+			>
+				Open
+			</button>
+			<button
+				onClick={() => {
+					closeDoor(door);
+				}}
+			>
+				Close
+			</button>
 			<div className="instellingen">
 				<div className="input-group">
 					<label htmlFor="name">Name</label>
