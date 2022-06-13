@@ -30,7 +30,7 @@ function ManualControl() {
 						onClick={() => openDoor(door)}
 						style={{ width: '100%' }}
 					>
-						Open door
+						Open {getDoorLabel(door)}
 					</Button>
 				</Grid.Col>
 				<Grid.Col span={6}>
@@ -38,7 +38,7 @@ function ManualControl() {
 						onClick={() => closeDoor(door)}
 						style={{ width: '100%' }}
 					>
-						Close door
+						Close {getDoorLabel(door)}
 					</Button>
 				</Grid.Col>
 			</Grid>
