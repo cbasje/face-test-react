@@ -4,6 +4,7 @@ import {
 	doorState,
 	eventState,
 	heightState,
+	langState,
 	nameState,
 	objectState,
 } from './atoms';
@@ -19,6 +20,7 @@ export const messagesState = selector({
 	get: ({ get }) => {
 		const height = get(heightState);
 		const name = get(nameState);
+		const lang = get(langState);
 		const door = get(doorState);
 		const object = get(objectState);
 		const event = get(eventState);
@@ -26,15 +28,15 @@ export const messagesState = selector({
 
 		switch (conv) {
 			case ConversationType.Introduction:
-				return introductionConversation(height, name);
+				return introductionConversation(height, name, lang);
 			case ConversationType.ObjectFail:
-				return objectFailConversation(name, door, object);
+				return objectFailConversation(name, lang, door, object);
 			case ConversationType.DirtyCamera:
-				return dirtyCameraConversation(name);
+				return dirtyCameraConversation(name, lang);
 			case ConversationType.FaceFail:
 				return faceFailConversation();
 			case ConversationType.Final:
-				return finalConversation(name, event);
+				return finalConversation(name, lang, event);
 		}
 	},
 });

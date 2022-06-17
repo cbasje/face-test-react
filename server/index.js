@@ -198,6 +198,8 @@ board.on('ready', function () {
 	};
 
 	const sendLoading = async (id) => {
+		console.log(`Loading`);
+
 		const radius = 5;
 		const begin = 0 - radius;
 		const end = NUM_LEDS + radius;
@@ -221,20 +223,28 @@ board.on('ready', function () {
 	const sendConfirmation = async (id) => {
 		console.log(`Confirmation`);
 
-		turnOnStrip('#5B64EB');
+		turnOnStrip('#153478');
 		await scheduler.wait(100);
 		turnOffStrip();
 
 		await scheduler.wait(200);
 
-		turnOnStrip('#5B64EB');
+		turnOnStrip('#153478');
 		await scheduler.wait(100);
 		turnOffStrip();
 	};
 
-	const startPairing = (id) => {};
+	const startPairing = (id) => {
+		console.log(`Start pairing`);
 
-	const stopPairing = (id) => {};
+		sendLoading(id);
+	};
+
+	const stopPairing = (id) => {
+		console.log(`Stop pairing`);
+
+		turnOffStrip();
+	};
 
 	io.on('connection', (socket) => {
 		const { id } = socket.handshake.query;

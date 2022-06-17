@@ -28,6 +28,7 @@ export function SocketProvider({
 	const socket = io(url, {
 		transports: ['websocket', 'polling'],
 		query: { id },
+		reconnectionAttempts: 10,
 	});
 
 	const openDoor = (door: Door) => {

@@ -13,7 +13,7 @@ import {
 import { useState } from 'react';
 import { useSocket } from '../contexts/SocketContext';
 import { Door, getDoorLabel } from '../types/door';
-import { Message } from '../types/message';
+import { Message, MessageText } from '../types/message';
 import { getObjectTypeLabel, ObjectType } from '../types/object';
 import {
 	ConversationType,
@@ -25,18 +25,21 @@ import {
 	doorState,
 	eventState,
 	heightState,
+	langState,
 	nameState,
 	objectState,
 } from '../store/atoms';
 import { messagesState } from '../store/selectors';
 import { ArrowClockwise } from 'phosphor-react';
 import { EventType, getEventTypeLabel } from '../types/event';
+import { speak, speakMessageText } from '../util/speech';
 
 function Conversation() {
 	const [selectedMessage, setSelectedMessage] = useState(0);
 
 	const [conv, setConv] = useRecoilState(conversationState);
 	const [name, setName] = useRecoilState(nameState);
+	const [lang, setLang] = useRecoilState(langState);
 	const [door, setDoor] = useRecoilState(doorState);
 	const [height, setHeight] = useRecoilState(heightState);
 	const [object, setObject] = useRecoilState(objectState);
@@ -54,19 +57,19 @@ function Conversation() {
 		stopPairing,
 	} = useSocket();
 
-	const speakMessage = (text: string, lang: string = 'en-GB') => {
-		if ('speechSynthesis' in window) {
-			let utterance = new SpeechSynthesisUtterance(text);
-			utterance.lang = lang;
-			window.speechSynthesis.speak(utterance);
-		} else {
-			console.error('Browser not supported');
-		}
+	const getMessageLabel = (text: MessageText[]) => {
+		return text
+			.map((t) => {
+				if (typeof t === 'string') {
+					return t;
+				} else return t.text;
+			})
+			.join(' ');
 	};
 
 	const clickMessage = (message: Message) => {
 		setSelectedMessage(message.id);
-		if (!message.preventSpeak) speakMessage(message.text);
+		if (!message.preventSpeak) speakMessageText(message.text);
 
 		if (!!message.callback) {
 			switch (message.callback.functionName) {
@@ -87,9 +90,7 @@ function Conversation() {
 
 						if (newDoor !== door) {
 							closeDoor(door);
-							speakMessage(
-								'Switching to the ' + getDoorLabel(newDoor)
-							);
+							speak('Switching to the ' + getDoorLabel(newDoor));
 							openDoor(newDoor);
 						}
 					}
@@ -153,6 +154,16 @@ function Conversation() {
 						required
 					/>
 				</Grid.Col>
+				<Grid.Col span={6}>
+					<TextInput
+						placeholder="Language"
+						label="Language"
+						value={lang}
+						onChange={(e) => setLang(e.target.value)}
+						required
+					/>
+				</Grid.Col>
+
 				<Grid.Col span={6}>
 					<NumberInput
 						placeholder="Height"
@@ -220,7 +231,7 @@ function Conversation() {
 								onClick={() => {
 									const msg = messages[selectedMessage];
 									if (!msg.preventSpeak)
-										speakMessage(msg.text);
+										speakMessageText(msg.text);
 								}}
 							>
 								<ArrowClockwise size={20} weight="bold" />
@@ -240,14 +251,14 @@ function Conversation() {
 									width: '100%',
 									height: 'auto',
 									paddingBlock: theme.spacing.xs,
-									lineHeight: 'normal',
+									lineHeight: 1.3,
 								},
 								label: { whiteSpace: 'normal' },
 							})}
 							onClick={() => clickMessage(messages[child])}
 							key={messages[child].id}
 						>
-							{messages[child].text}
+							{getMessageLabel(messages[child].text)}
 						</Button>
 					))}
 

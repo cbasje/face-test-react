@@ -1,8 +1,10 @@
 import { Door } from './door';
 
+export type MessageText = string | { text: string; lang: string };
+
 export interface Message {
 	id: number;
-	text: string;
+	text: MessageText[];
 	children?: number[];
 	callback?: MessageCallback;
 	preventSpeak?: boolean;

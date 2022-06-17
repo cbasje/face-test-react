@@ -12,6 +12,11 @@ export const nameState = atom({
 	default: '',
 	effects_UNSTABLE: [persistAtom],
 });
+export const langState = atom({
+	key: 'langState',
+	default: 'en-GB',
+	effects_UNSTABLE: [persistAtom],
+});
 export const heightState = atom({
 	key: 'heightState',
 	default: 0,

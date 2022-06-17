@@ -5,17 +5,18 @@ import { getObjectTypeLabel, ObjectType } from '../../types/object';
 
 export const objectFailConversation = (
 	name: string,
+	lang: string,
 	door: Door,
 	object: ObjectType
 ): { [id: number]: Message } => ({
 	0: {
 		id: 0,
-		text: '',
+		text: [''],
 		children: [1],
 	},
 	1: {
 		id: 1,
-		text: `Hey, ${name}!`,
+		text: ['Hey,', { text: name, lang }],
 		children: [2],
 		callback: {
 			functionName: 'sendWelcome',
@@ -23,12 +24,12 @@ export const objectFailConversation = (
 	},
 	2: {
 		id: 2,
-		text: `I see you are carrying ${getObjectTypeLabel(object)}!`,
+		text: [`I see you are carrying ${getObjectTypeLabel(object)}!`],
 		children: [3],
 	},
 	3: {
 		id: 3,
-		text: `I'll open the ${getDoorLabel(door)} for you.`,
+		text: [`I'll open the ${getDoorLabel(door)} for you.`],
 		children: [4, 5, 6],
 		callback: {
 			functionName: 'openDoor',
@@ -36,7 +37,7 @@ export const objectFailConversation = (
 	},
 	4: {
 		id: 4,
-		text: 'Open front door',
+		text: ['Open front door'],
 		children: [7],
 		preventSpeak: true,
 		callback: {
@@ -46,7 +47,7 @@ export const objectFailConversation = (
 	},
 	5: {
 		id: 5,
-		text: 'Open back door',
+		text: ['Open back door'],
 		children: [7],
 		preventSpeak: true,
 		callback: {
@@ -56,7 +57,7 @@ export const objectFailConversation = (
 	},
 	6: {
 		id: 6,
-		text: 'Open trunk',
+		text: ['Open trunk'],
 		children: [7],
 		preventSpeak: true,
 		callback: {
@@ -66,7 +67,7 @@ export const objectFailConversation = (
 	},
 	7: {
 		id: 7,
-		text: 'Close the door',
+		text: ['Close the door'],
 		children: [8],
 		preventSpeak: true,
 		callback: {
@@ -75,12 +76,12 @@ export const objectFailConversation = (
 	},
 	8: {
 		id: 8,
-		text: 'Are we leaving?',
+		text: ['Are we leaving?'],
 		children: [9, 11],
 	},
 	9: {
 		id: 9,
-		text: 'Yes',
+		text: ['Yes'],
 		children: [10],
 		preventSpeak: true,
 		callback: {
@@ -90,7 +91,7 @@ export const objectFailConversation = (
 	},
 	10: {
 		id: 10,
-		text: 'Close the front door',
+		text: ['Close the front door'],
 		preventSpeak: true,
 		callback: {
 			functionName: 'closeDoor',
@@ -99,6 +100,6 @@ export const objectFailConversation = (
 	},
 	11: {
 		id: 11,
-		text: 'Okay, I will wait until you are ready',
+		text: ['Okay, I will wait until you are ready'],
 	},
 });
