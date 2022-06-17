@@ -209,6 +209,10 @@ board.on('ready', function () {
 	});
 });
 
+app.get('/', (req, res) => {
+	res.send(`Listening at https://${hostname}:${port}`);
+});
+
 // Start up server and log addresses for local and network
 const startServer = () => {
 	server.listen(port, '0.0.0.0', () => {

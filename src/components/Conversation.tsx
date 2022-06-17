@@ -15,7 +15,10 @@ import { useSocket } from '../contexts/SocketContext';
 import { Door, getDoorLabel } from '../types/door';
 import { Message } from '../types/message';
 import { getObjectTypeLabel, ObjectType } from '../types/object';
-import { ConversationType } from '../types/conversation';
+import {
+	ConversationType,
+	getConversationTypeLabel,
+} from '../types/conversation';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import {
 	conversationState,
@@ -38,7 +41,15 @@ function Conversation() {
 
 	const messages = useRecoilValue(messagesState) ?? [];
 
-	const { openDoor, closeDoor, sendWelcome } = useSocket();
+	const {
+		openDoor,
+		closeDoor,
+		sendWelcome,
+		sendLoading,
+		sendConfirmation,
+		startPairing,
+		stopPairing,
+	} = useSocket();
 
 	const speakMessage = (text: string, lang: string = 'en-GB') => {
 		if ('speechSynthesis' in window) {
@@ -89,10 +100,16 @@ function Conversation() {
 					);
 					break;
 				case 'sendLoading':
+					sendLoading();
 					break;
 				case 'sendConfirmation':
+					sendConfirmation();
 					break;
 				case 'startPairing':
+					startPairing();
+					break;
+				case 'stopPairing':
+					stopPairing();
 					break;
 				default:
 					console.warn('Unsupported callback function');
@@ -117,11 +134,10 @@ function Conversation() {
 							setConv(value as ConversationType);
 							resetMessages();
 						}}
-						data={[
-							{ label: 'Learning', value: 'learn' },
-							{ label: 'Training', value: 'train' },
-							{ label: 'Final', value: 'final' },
-						]}
+						data={Object.values(ConversationType).map((c) => ({
+							value: c,
+							label: getConversationTypeLabel(c),
+						}))}
 					/>
 				</Grid.Col>
 

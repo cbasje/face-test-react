@@ -1,9 +1,9 @@
-import { useSocket } from '../contexts/SocketContext';
-import { Door, getDoorLabel } from '../types/door';
-import { Message } from '../types/message';
-import { getObjectTypeLabel, ObjectType } from '../types/object';
+import { useSocket } from '../../contexts/SocketContext';
+import { Door, getDoorLabel } from '../../types/door';
+import { Message } from '../../types/message';
+import { getObjectTypeLabel, ObjectType } from '../../types/object';
 
-export const messages = (
+export const objectFailConversation = (
 	name: string,
 	door: Door,
 	object: ObjectType

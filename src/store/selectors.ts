@@ -7,9 +7,11 @@ import {
 	objectState,
 } from './atoms';
 import { ConversationType } from '../types/conversation';
-import { messages as learningConversation } from '../util/learningConversation';
-import { messages as trainingConversation } from '../util/trainingConversation';
-import { messages as finalConversation } from '../util/finalConversation';
+import { introductionConversation } from '../lib/conversations/introduction';
+import { objectFailConversation } from '../lib/conversations/objectFail';
+import { finalConversation } from '../lib/conversations/final';
+import { faceFailConversation } from '../lib/conversations/faceFail';
+import { dirtyCameraConversation } from '../lib/conversations/dirtyCamera';
 
 export const messagesState = selector({
 	key: 'messagesState',
@@ -21,10 +23,14 @@ export const messagesState = selector({
 		const conv = get(conversationState);
 
 		switch (conv) {
-			case ConversationType.Learning:
-				return learningConversation(height, name);
-			case ConversationType.Talking:
-				return trainingConversation(name, door, object);
+			case ConversationType.Introduction:
+				return introductionConversation(height, name);
+			case ConversationType.ObjectFail:
+				return objectFailConversation(name, door, object);
+			case ConversationType.DirtyCamera:
+				return dirtyCameraConversation();
+			case ConversationType.FaceFail:
+				return faceFailConversation();
 			case ConversationType.Final:
 				return finalConversation();
 		}

@@ -1,7 +1,7 @@
-import { Door } from '../types/door';
-import { Message } from '../types/message';
+import { Door } from '../../types/door';
+import { Message } from '../../types/message';
 
-export const messages = (
+export const introductionConversation = (
 	height: number,
 	name: string
 ): { [id: number]: Message } => ({
@@ -107,10 +107,33 @@ export const messages = (
 	16: {
 		id: 16,
 		text: 'Okay',
-		children: [18],
+		children: [23],
 		preventSpeak: true,
 		callback: {
 			functionName: 'startPairing',
+		},
+	},
+	23: {
+		id: 23,
+		text: 'Please open the Fordpass app on your phone and accept my request to pair with you. After you do, you can always access and change my permissions.',
+		children: [24],
+	},
+	24: {
+		id: 24,
+		text: 'Done!',
+		children: [18],
+		preventSpeak: true,
+		callback: {
+			functionName: 'stopPairing',
+		},
+	},
+	25: {
+		id: 25,
+		text: 'I will do it later.',
+		children: [19],
+		preventSpeak: true,
+		callback: {
+			functionName: 'stopPairing',
 		},
 	},
 	17: {

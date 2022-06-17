@@ -28,6 +28,6 @@ export const doorState = atom({
 });
 export const conversationState = atom({
 	key: 'conversationState',
-	default: ConversationType.Learning,
+	default: ConversationType.Introduction,
 	effects_UNSTABLE: [persistAtom],
 });

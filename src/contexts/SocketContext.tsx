@@ -7,6 +7,10 @@ const SocketContext = createContext({
 	openDoor: (door: Door) => {},
 	closeDoor: (door: Door) => {},
 	sendWelcome: () => {},
+	sendLoading: () => {},
+	sendConfirmation: () => {},
+	startPairing: () => {},
+	stopPairing: () => {},
 });
 
 export function useSocket() {
@@ -38,9 +42,31 @@ export function SocketProvider({
 		socket.emit('send-welcome');
 	};
 
+	const sendLoading = () => {
+		socket.emit('send-loading');
+	};
+	const sendConfirmation = () => {
+		socket.emit('send-confirmation');
+	};
+	const startPairing = () => {
+		socket.emit('start-pairing');
+	};
+	const stopPairing = () => {
+		socket.emit('stop-pairing');
+	};
+
 	return (
 		<SocketContext.Provider
-			value={{ socket, openDoor, closeDoor, sendWelcome }}
+			value={{
+				socket,
+				openDoor,
+				closeDoor,
+				sendWelcome,
+				sendLoading,
+				sendConfirmation,
+				startPairing,
+				stopPairing,
+			}}
 		>
 			{children}
 		</SocketContext.Provider>

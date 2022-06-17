@@ -16,6 +16,7 @@ interface MessageCallback {
 		| 'closeDoor'
 		| 'sendLoading'
 		| 'sendConfirmation'
-		| 'startPairing';
+		| 'startPairing'
+		| 'stopPairing';
 	args?: string[] | number[] | Door[];
 }
