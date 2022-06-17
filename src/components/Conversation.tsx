@@ -23,21 +23,24 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import {
 	conversationState,
 	doorState,
+	eventState,
 	heightState,
 	nameState,
 	objectState,
 } from '../store/atoms';
 import { messagesState } from '../store/selectors';
 import { ArrowClockwise } from 'phosphor-react';
+import { EventType, getEventTypeLabel } from '../types/event';
 
 function Conversation() {
 	const [selectedMessage, setSelectedMessage] = useState(0);
 
 	const [conv, setConv] = useRecoilState(conversationState);
 	const [name, setName] = useRecoilState(nameState);
+	const [door, setDoor] = useRecoilState(doorState);
 	const [height, setHeight] = useRecoilState(heightState);
 	const [object, setObject] = useRecoilState(objectState);
-	const [door, setDoor] = useRecoilState(doorState);
+	const [event, setEvent] = useRecoilState(eventState);
 
 	const messages = useRecoilValue(messagesState) ?? [];
 
@@ -182,6 +185,18 @@ function Conversation() {
 						data={Object.values(Door).map((d) => ({
 							value: d,
 							label: getDoorLabel(d),
+						}))}
+					/>
+				</Grid.Col>
+
+				<Grid.Col span={6}>
+					<Select
+						label="Event"
+						value={event}
+						onChange={(e) => setEvent(e as EventType)}
+						data={Object.values(EventType).map((e) => ({
+							value: e,
+							label: getEventTypeLabel(e),
 						}))}
 					/>
 				</Grid.Col>

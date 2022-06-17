@@ -78,7 +78,7 @@ board.on('ready', function () {
 	strip = new pixel.Strip({
 		board: this,
 		controller: 'FIRMATA',
-		strips: [{ pin: 6, length: NUM_LEDS }],
+		strips: [{ pin: 5, length: NUM_LEDS }],
 		gamma: 2.8,
 	});
 
@@ -97,18 +97,18 @@ board.on('ready', function () {
 		switch (door) {
 			case 'f':
 				[begin, end] = ledsFrontDoor;
-				turnOnStrip(begin, end, '#FFF');
+				turnOnStripPartly(begin, end, '#FFF');
 				break;
 			case 'b':
 				[begin, end] = ledsBackDoor;
-				turnOnStrip(begin, end, '#FFF');
+				turnOnStripPartly(begin, end, '#FFF');
 				break;
 			case 't':
 				break;
 		}
 	};
 
-	const turnOnStrip = async (
+	const turnOnStripPartly = async (
 		begin = 0,
 		end = NUM_LEDS,
 		color = '#FFF',
@@ -121,10 +121,14 @@ board.on('ready', function () {
 
 				await scheduler.wait(delay);
 			} else {
-				strip.pixel(index).color('#000');
+				strip.pixel(index).off();
 				strip.show();
 			}
 		}
+	};
+	const turnOnStrip = (color) => {
+		strip.color(color);
+		strip.show();
 	};
 	const turnOffStrip = () => {
 		strip.color('#000');
@@ -136,7 +140,7 @@ board.on('ready', function () {
 	});
 
 	// Turn the Led on or off and update the state
-	async function openDoor(door, id) {
+	const openDoor = async (door, id) => {
 		console.log(`Open door: ${door}`);
 
 		turnOffStrip();
@@ -153,9 +157,9 @@ board.on('ready', function () {
 				trunk.fwd(255);
 				break;
 		}
-	}
+	};
 
-	async function closeDoor(door, id) {
+	const closeDoor = async (door, id) => {
 		console.log(`Close door: ${door}`);
 
 		turnOffStrip();
@@ -171,16 +175,66 @@ board.on('ready', function () {
 				trunk.rev(255);
 				break;
 		}
-	}
+	};
 
 	// Send a welcome to the user
-	async function sendWelcome(id) {
+	const sendWelcome = async (id) => {
 		console.log(`Welcome`);
-		turnOnStrip();
+		// FIXME: Send welcome message
+		// turnOnStrip('#ffffff');
 
-		await scheduler.wait(5000);
+		// await scheduler.wait(5000);
+		// turnOffStrip();
+
+		turnOnStrip('#FFF');
+		await scheduler.wait(100);
 		turnOffStrip();
-	}
+
+		await scheduler.wait(200);
+
+		turnOnStrip('#FFF');
+		await scheduler.wait(100);
+		turnOffStrip();
+	};
+
+	const sendLoading = async (id) => {
+		const radius = 5;
+		const begin = 0 - radius;
+		const end = NUM_LEDS + radius;
+		const color = '#aaa';
+		const delay = 25;
+
+		for (index = begin; index <= end; index++) {
+			for (let n = -radius; n <= radius; n++) {
+				if (_.inRange(index - 6, 0, NUM_LEDS))
+					strip.pixel(index - 6).off();
+				if (_.inRange(index + n, 0, NUM_LEDS))
+					strip.pixel(index + n).color(color);
+			}
+			s;
+
+			strip.show();
+			await scheduler.wait(delay);
+		}
+	};
+
+	const sendConfirmation = async (id) => {
+		console.log(`Confirmation`);
+
+		turnOnStrip('#5B64EB');
+		await scheduler.wait(100);
+		turnOffStrip();
+
+		await scheduler.wait(200);
+
+		turnOnStrip('#5B64EB');
+		await scheduler.wait(100);
+		turnOffStrip();
+	};
+
+	const startPairing = (id) => {};
+
+	const stopPairing = (id) => {};
 
 	io.on('connection', (socket) => {
 		const { id } = socket.handshake.query;
@@ -200,6 +254,22 @@ board.on('ready', function () {
 
 		socket.on('send-welcome', () => {
 			sendWelcome(id);
+		});
+
+		socket.on('send-loading', () => {
+			sendLoading(id);
+		});
+
+		socket.on('send-confirmation', () => {
+			sendConfirmation(id);
+		});
+
+		socket.on('start-pairing', () => {
+			startPairing(id);
+		});
+
+		socket.on('stop-pairing', () => {
+			stopPairing(id);
 		});
 
 		// Clean up when client disconnects

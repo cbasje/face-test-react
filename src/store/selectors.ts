@@ -2,6 +2,7 @@ import { selector } from 'recoil';
 import {
 	conversationState,
 	doorState,
+	eventState,
 	heightState,
 	nameState,
 	objectState,
@@ -20,6 +21,7 @@ export const messagesState = selector({
 		const name = get(nameState);
 		const door = get(doorState);
 		const object = get(objectState);
+		const event = get(eventState);
 		const conv = get(conversationState);
 
 		switch (conv) {
@@ -28,11 +30,11 @@ export const messagesState = selector({
 			case ConversationType.ObjectFail:
 				return objectFailConversation(name, door, object);
 			case ConversationType.DirtyCamera:
-				return dirtyCameraConversation();
+				return dirtyCameraConversation(name);
 			case ConversationType.FaceFail:
 				return faceFailConversation();
 			case ConversationType.Final:
-				return finalConversation();
+				return finalConversation(name, event);
 		}
 	},
 });

@@ -5,7 +5,15 @@ import { useSocket } from '../contexts/SocketContext';
 import { Door, getDoorLabel } from '../types/door';
 
 function ManualControl() {
-	const { openDoor, closeDoor } = useSocket();
+	const {
+		openDoor,
+		closeDoor,
+		sendWelcome,
+		sendLoading,
+		sendConfirmation,
+		startPairing,
+		stopPairing,
+	} = useSocket();
 
 	const [door, setDoor] = useRecoilState(doorState);
 
@@ -39,6 +47,50 @@ function ManualControl() {
 						style={{ width: '100%' }}
 					>
 						Close {getDoorLabel(door)}
+					</Button>
+				</Grid.Col>
+
+				<Grid.Col span={12}>
+					<Title order={3}>Events</Title>
+				</Grid.Col>
+				<Grid.Col span={12}>
+					<Button
+						onClick={() => sendWelcome()}
+						style={{ width: '100%' }}
+					>
+						Welcome
+					</Button>
+				</Grid.Col>
+				<Grid.Col span={12}>
+					<Button
+						onClick={() => sendLoading()}
+						style={{ width: '100%' }}
+					>
+						Loading
+					</Button>
+				</Grid.Col>
+				<Grid.Col span={12}>
+					<Button
+						onClick={() => sendConfirmation()}
+						style={{ width: '100%' }}
+					>
+						Confirmation
+					</Button>
+				</Grid.Col>
+				<Grid.Col span={12}>
+					<Button
+						onClick={() => startPairing()}
+						style={{ width: '100%' }}
+					>
+						Start Pairing
+					</Button>
+				</Grid.Col>
+				<Grid.Col span={12}>
+					<Button
+						onClick={() => stopPairing()}
+						style={{ width: '100%' }}
+					>
+						Stop Pairing
 					</Button>
 				</Grid.Col>
 			</Grid>
