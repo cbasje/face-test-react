@@ -34,7 +34,7 @@ export const messagesState = selector({
 			case ConversationType.DirtyCamera:
 				return dirtyCameraConversation(name, lang);
 			case ConversationType.FaceFail:
-				return faceFailConversation();
+				return faceFailConversation(name, lang);
 			case ConversationType.Final:
 				return finalConversation(name, lang, event);
 		}

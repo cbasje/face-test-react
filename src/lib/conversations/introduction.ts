@@ -28,6 +28,9 @@ export const introductionConversation = (
 		id: 3,
 		text: ['What is your name?'],
 		children: [4, 5],
+		callback: {
+			functionName: 'sendLoading',
+		},
 	},
 	4: {
 		id: 4,

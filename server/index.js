@@ -228,6 +228,8 @@ board.on('ready', function () {
 	const sendLoading = async (id) => {
 		console.log(`Loading`);
 
+		await scheduler.wait(1000);
+
 		const radius = 5;
 		const begin = 0 - radius;
 		const end = NUM_LEDS_SIDE + radius;
