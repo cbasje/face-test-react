@@ -30,22 +30,7 @@ const io = new socketIo.Server(server, {
 	},
 });
 
-// ENUM
-const FRONT_DOOR = 'f';
-const BACK_DOOR = 'b';
-const TRUNK = 't';
-const SIDE = 's';
-
-// Pins
-const PIN_SERVO_FRONT = 3;
-const PIN_SERVO_BACK = 4;
-const PIN_STRIP_SIDE = 5;
-const PIN_STRIP_TRUNK = 6;
-
-// Number of LEDs in strip
-const NUM_LEDS_SIDE = 120;
-const NUM_LEDS_TRUNK = 30;
-
+const NUM_LEDS = 120; // Number of LEDs in strip
 const ledsFrontDoor = [0, 52];
 const ledsBackDoor = [53, 120];
 
@@ -71,13 +56,17 @@ const TRUNK_TIMEOUT = 15 * 1000;
 
 let frontDoor = null;
 let trunk = null;
-let sideStrip = null;
+let strip = null;
+let colors = ['#8F8', '#F66'];
+
+let savedState = 0;
+let index = 0;
 
 const board = new five.Board({ repl: false });
 board.on('ready', function () {
 	// Define our hardware
 	frontDoor = new five.Servo({
-		pin: PIN_SERVO_FRONT,
+		pin: 3,
 		range: [0, 180],
 		startAt: 0,
 	});
@@ -86,16 +75,10 @@ board.on('ready', function () {
 		pin: 'A',
 	});
 
-	sideStrip = new pixel.Strip({
+	strip = new pixel.Strip({
 		board: this,
 		controller: 'FIRMATA',
-		strips: [{ pin: PIN_STRIP_SIDE, length: NUM_LEDS_SIDE }],
-		gamma: 2.8,
-	});
-	trunkStrip = new pixel.Strip({
-		board: this,
-		controller: 'FIRMATA',
-		strips: [{ pin: PIN_STRIP_TRUNK, length: NUM_LEDS_TRUNK }],
+		strips: [{ pin: 5, length: NUM_LEDS }],
 		gamma: 2.8,
 	});
 
@@ -109,63 +92,52 @@ board.on('ready', function () {
 		trunk.stop();
 	});
 
-	sideStrip.on('ready', function () {
-		console.log("Strip ready, let's go");
-	});
-
-	const turnOnStripPartly = async (
-		begin = 0,
-		end = NUM_LEDS_SIDE,
-		color = '#FFF',
-		delay = 10
-	) => {
-		for (index = 0; index < NUM_LEDS_SIDE; index++) {
-			if (index >= begin && index <= end) {
-				sideStrip.pixel(index).color(color);
-				sideStrip.show();
-
-				await scheduler.wait(delay);
-			} else {
-				sideStrip.pixel(index).off();
-				sideStrip.show();
-			}
-		}
-	};
-	const turnOnStrip = (color = '#FFF', strip = SIDE) => {
-		if (strip === TRUNK) {
-			trunkStrip.color(color);
-			trunkStrip.show();
-		} else {
-			sideStrip.color(color);
-			sideStrip.show();
-		}
-	};
-	const turnOffStrip = () => {
-		if (strip === TRUNK) {
-			trunkStrip.off();
-			// trunkStrip.show();
-		} else {
-			sideStrip.off();
-			// sideStrip.show();
-		}
-	};
-
 	const turnOnDoor = async (door) => {
 		let begin, end;
 		switch (door) {
-			case FRONT_DOOR:
+			case 'f':
 				[begin, end] = ledsFrontDoor;
 				turnOnStripPartly(begin, end, '#FFF');
 				break;
-			case BACK_DOOR:
+			case 'b':
 				[begin, end] = ledsBackDoor;
 				turnOnStripPartly(begin, end, '#FFF');
 				break;
-			case TRUNK:
-				turnOnStrip('#FFF', TRUNK);
+			case 't':
 				break;
 		}
 	};
+
+	const turnOnStripPartly = async (
+		begin = 0,
+		end = NUM_LEDS,
+		color = '#FFF',
+		delay = 10
+	) => {
+		for (index = 0; index < NUM_LEDS; index++) {
+			if (index >= begin && index <= end) {
+				strip.pixel(index).color(color);
+				strip.show();
+
+				await scheduler.wait(delay);
+			} else {
+				strip.pixel(index).off();
+				strip.show();
+			}
+		}
+	};
+	const turnOnStrip = (color) => {
+		strip.color(color);
+		strip.show();
+	};
+	const turnOffStrip = () => {
+		strip.color('#000');
+		strip.show();
+	};
+
+	strip.on('ready', function () {
+		console.log("Strip ready, let's go");
+	});
 
 	// Turn the Led on or off and update the state
 	const openDoor = async (door, id) => {
@@ -232,19 +204,20 @@ board.on('ready', function () {
 
 		const radius = 5;
 		const begin = 0 - radius;
-		const end = NUM_LEDS_SIDE + radius;
+		const end = NUM_LEDS + radius;
 		const color = '#aaa';
 		const delay = 25;
 
 		for (index = begin; index <= end; index++) {
 			for (let n = -radius; n <= radius; n++) {
-				if (_.inRange(index - 6, 0, NUM_LEDS_SIDE))
-					sideStrip.pixel(index - 6).off();
-				if (_.inRange(index + n, 0, NUM_LEDS_SIDE))
-					sideStrip.pixel(index + n).color(color);
+				if (_.inRange(index - 6, 0, NUM_LEDS))
+					strip.pixel(index - 6).off();
+				if (_.inRange(index + n, 0, NUM_LEDS))
+					strip.pixel(index + n).color(color);
 			}
+			s;
 
-			sideStrip.show();
+			strip.show();
 			await scheduler.wait(delay);
 		}
 	};
