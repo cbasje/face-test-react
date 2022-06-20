@@ -30,10 +30,6 @@ const io = new socketIo.Server(server, {
 	},
 });
 
-const NUM_LEDS = 120; // Number of LEDs in strip
-const ledsFrontDoor = [0, 52];
-const ledsBackDoor = [53, 120];
-
 const subscribers = new Map();
 
 const subscribe = (id, socket) => {
@@ -51,6 +47,26 @@ const unsubscribe = (id) => {
 	subscribers.delete(id);
 	console.log(`Disconnected from ${id}.`);
 };
+
+// ENUM
+const FRONT_DOOR = 'f';
+const BACK_DOOR = 'b';
+const TRUNK = 't';
+const SIDE = 's';
+
+// Pins
+const PIN_SERVO_FRONT = 3;
+const PIN_SERVO_BACK = 4;
+const PIN_STRIP_SIDE = 5;
+const PIN_STRIP_TRUNK = 2;
+
+// Number of LEDs in strip
+const NUM_LEDS_SIDE = 120;
+const NUM_LEDS_TRUNK = 30;
+
+const ledsFrontDoor = [0, 52];
+const ledsBackDoor = [53, 119];
+const ledsTrunk = [120, 149];
 
 const TRUNK_TIMEOUT = 15 * 1000;
 
@@ -78,7 +94,10 @@ board.on('ready', function () {
 	strip = new pixel.Strip({
 		board: this,
 		controller: 'FIRMATA',
-		strips: [{ pin: 5, length: NUM_LEDS }],
+		strips: [
+			{ pin: PIN_STRIP_SIDE, length: NUM_LEDS_SIDE },
+			{ pin: PIN_STRIP_TRUNK, length: NUM_LEDS_TRUNK },
+		],
 		gamma: 2.8,
 	});
 
@@ -95,34 +114,37 @@ board.on('ready', function () {
 	const turnOnDoor = async (door) => {
 		let begin, end;
 		switch (door) {
-			case 'f':
+			case FRONT_DOOR:
 				[begin, end] = ledsFrontDoor;
 				turnOnStripPartly(begin, end, '#FFF');
 				break;
-			case 'b':
+			case BACK_DOOR:
 				[begin, end] = ledsBackDoor;
 				turnOnStripPartly(begin, end, '#FFF');
 				break;
-			case 't':
+			case TRUNK:
+				[begin, end] = ledsTrunk;
+				turnOnStripPartly(begin, end, '#FFF');
 				break;
 		}
 	};
 
 	const turnOnStripPartly = async (
 		begin = 0,
-		end = NUM_LEDS,
+		end = strip.length,
 		color = '#FFF',
 		delay = 10
 	) => {
-		for (index = 0; index < NUM_LEDS; index++) {
+		for (index = 0; index < strip.length; index++) {
 			if (index >= begin && index <= end) {
+				console.log(`Turning on LED ${index}`);
 				strip.pixel(index).color(color);
 				strip.show();
 
 				await scheduler.wait(delay);
 			} else {
-				strip.pixel(index).off();
-				strip.show();
+				// strip.pixel(index).off();
+				// strip.show();
 			}
 		}
 	};
@@ -148,12 +170,12 @@ board.on('ready', function () {
 		await scheduler.wait(1000);
 
 		switch (door) {
-			case 'f':
+			case FRONT_DOOR:
 				frontDoor.to(180);
 				break;
-			case 'b':
+			case BACK_DOOR:
 				break;
-			case 't':
+			case TRUNK:
 				trunk.fwd(255);
 				break;
 		}
@@ -166,12 +188,12 @@ board.on('ready', function () {
 		await scheduler.wait(1000);
 
 		switch (door) {
-			case 'f':
+			case FRONT_DOOR:
 				frontDoor.to(0);
 				break;
-			case 'b':
+			case BACK_DOOR:
 				break;
-			case 't':
+			case TRUNK:
 				trunk.rev(255);
 				break;
 		}
@@ -180,20 +202,9 @@ board.on('ready', function () {
 	// Send a welcome to the user
 	const sendWelcome = async (id) => {
 		console.log(`Welcome`);
-		// FIXME: Send welcome message
-		// turnOnStrip('#ffffff');
+		turnOnStrip('#ffffff');
 
-		// await scheduler.wait(5000);
-		// turnOffStrip();
-
-		turnOnStrip('#FFF');
-		await scheduler.wait(100);
-		turnOffStrip();
-
-		await scheduler.wait(200);
-
-		turnOnStrip('#FFF');
-		await scheduler.wait(100);
+		await scheduler.wait(5000);
 		turnOffStrip();
 	};
 
@@ -203,19 +214,17 @@ board.on('ready', function () {
 		await scheduler.wait(1000);
 
 		const radius = 5;
-		const begin = 0 - radius;
-		const end = NUM_LEDS + radius;
+		const begin = 0;
+		const end = NUM_LEDS_SIDE;
 		const color = '#aaa';
 		const delay = 25;
 
-		for (index = begin; index <= end; index++) {
+		for (index = begin - radius; index <= end + radius; index++) {
 			for (let n = -radius; n <= radius; n++) {
-				if (_.inRange(index - 6, 0, NUM_LEDS))
-					strip.pixel(index - 6).off();
-				if (_.inRange(index + n, 0, NUM_LEDS))
+				if (_.inRange(index - 6, 0, end)) strip.pixel(index - 6).off();
+				if (_.inRange(index + n, 0, end))
 					strip.pixel(index + n).color(color);
 			}
-			s;
 
 			strip.show();
 			await scheduler.wait(delay);
