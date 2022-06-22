@@ -4,6 +4,7 @@ export enum ConversationType {
 	DirtyCamera = 'cam',
 	FaceFail = 'face',
 	Final = 'final',
+	Silent = 'silent',
 }
 
 export const getConversationTypeLabel = (conversation: ConversationType) => {
@@ -18,5 +19,7 @@ export const getConversationTypeLabel = (conversation: ConversationType) => {
 			return 'Face fail';
 		case ConversationType.Final:
 			return 'Final';
+		case ConversationType.Silent:
+			return 'Silent';
 	}
 };

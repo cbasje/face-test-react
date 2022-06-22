@@ -14,6 +14,7 @@ import { objectFailConversation } from '../lib/conversations/objectFail';
 import { finalConversation } from '../lib/conversations/final';
 import { faceFailConversation } from '../lib/conversations/faceFail';
 import { dirtyCameraConversation } from '../lib/conversations/dirtyCamera';
+import { silentConversation } from '../lib/conversations/silentMode';
 
 export const messagesState = selector({
 	key: 'messagesState',
@@ -36,6 +37,8 @@ export const messagesState = selector({
 				return faceFailConversation(name, 'en-GB');
 			case ConversationType.Final:
 				return finalConversation(name, 'en-GB', event);
+			case ConversationType.Silent:
+				return silentConversation();
 		}
 	},
 });

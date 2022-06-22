@@ -44,10 +44,7 @@ export const introductionConversation = (
 	},
 	6: {
 		id: 6,
-		text: [
-			'Now, you can make your unique gesture to open the door.',
-			'You can use it when I am in silent mode',
-		],
+		text: ['Now, you can make your unique gesture to open the door.'],
 		children: [7, 13],
 	},
 	7: {
@@ -92,7 +89,8 @@ export const introductionConversation = (
 		text: ['Good! Now I definitely remember!'],
 		children: [15],
 		callback: {
-			functionName: 'sendConfirmation',
+			functionName: 'openDoor',
+			args: [Door.Front],
 		},
 	},
 	15: {
@@ -172,10 +170,6 @@ export const introductionConversation = (
 	},
 	22: {
 		id: 22,
-		text: ["Ok then, let's get started. Come in!"],
-		callback: {
-			functionName: 'openDoor',
-			args: [Door.Front],
-		},
+		text: ["Ok then, let's get started."],
 	},
 });
