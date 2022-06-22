@@ -20,7 +20,6 @@ export const messagesState = selector({
 	get: ({ get }) => {
 		const height = get(heightState);
 		const name = get(nameState);
-		const lang = get(langState);
 		const door = get(doorState);
 		const object = get(objectState);
 		const event = get(eventState);
@@ -28,15 +27,15 @@ export const messagesState = selector({
 
 		switch (conv) {
 			case ConversationType.Introduction:
-				return introductionConversation(height, name, lang);
+				return introductionConversation(height, name, 'en-GB');
 			case ConversationType.ObjectFail:
-				return objectFailConversation(name, lang, door, object);
+				return objectFailConversation(name, 'en-GB', door, object);
 			case ConversationType.DirtyCamera:
-				return dirtyCameraConversation(name, lang);
+				return dirtyCameraConversation(name, 'en-GB');
 			case ConversationType.FaceFail:
-				return faceFailConversation(name, lang);
+				return faceFailConversation(name, 'en-GB');
 			case ConversationType.Final:
-				return finalConversation(name, lang, event);
+				return finalConversation(name, 'en-GB', event);
 		}
 	},
 });

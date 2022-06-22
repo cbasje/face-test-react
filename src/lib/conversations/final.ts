@@ -23,16 +23,11 @@ export const finalConversation = (
 	2: {
 		id: 2,
 		text: [
-			`I see that you have ${getEventTypeLabel(event)} in ${Math.round(
-				Math.random() * 60
-			)} minutes.`,
+			`I see that you are in a hurry to get to your ${getEventTypeLabel(
+				event
+			)} in ${Math.round(Math.random() * 60)} minutes.`,
 			'I loaded the address from your calendar into the navigation system.',
 		],
-		children: [3],
-	},
-	3: {
-		id: 3,
-		text: ["Let's go!"],
 		callback: {
 			functionName: 'openDoor',
 			args: [Door.Front],

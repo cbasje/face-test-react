@@ -45,16 +45,15 @@ export const introductionConversation = (
 	6: {
 		id: 6,
 		text: [
-			'Now, you can make a gesture that is only for you.',
-			'This way I will always recognize you.',
+			'Now, you can make your unique gesture to open the door.',
+			'You can use it when I am in silent mode',
 		],
 		children: [7, 13],
 	},
 	7: {
 		id: 7,
-		text: ['Okay'],
+		text: ['Ok! Please do your gesture now.'],
 		children: [9],
-		preventSpeak: true,
 		callback: {
 			functionName: 'sendLoading',
 		},
@@ -74,9 +73,8 @@ export const introductionConversation = (
 	},
 	11: {
 		id: 11,
-		text: ['Okay'],
+		text: ['Ok! Please do your gesture now.'],
 		children: [14],
-		preventSpeak: true,
 		callback: {
 			functionName: 'sendLoading',
 		},
@@ -100,7 +98,7 @@ export const introductionConversation = (
 	15: {
 		id: 15,
 		text: [
-			'A connection to your smart devices will help me support you better.',
+			'To support you better, a connection to your smart devices will help me more.',
 			'Do you want to set it up now?',
 		],
 		children: [23, 19, 26],
@@ -137,7 +135,7 @@ export const introductionConversation = (
 	26: {
 		id: 26,
 		text: [
-			"Examples include preparing for when you are going to get in the car, making decisions towards fuel consumption or turning the airco in advance so i'm waiting with the perfect temperature.",
+			'Examples include preparing for when you are going to get in the car and making decisions towards fuel consumption.',
 		],
 		children: [16, 17],
 	},
@@ -159,7 +157,7 @@ export const introductionConversation = (
 	},
 	20: {
 		id: 20,
-		text: ['Yes'],
+		text: ["Yes. I don't want it"],
 		children: [22],
 		preventSpeak: true,
 	},

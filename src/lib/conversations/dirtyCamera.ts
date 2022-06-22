@@ -12,7 +12,7 @@ export const dirtyCameraConversation = (
 	},
 	1: {
 		id: 1,
-		text: ['Hey,', { text: name, lang }],
+		text: [{ text: name, lang }, ', is that you?'],
 		children: [2],
 		callback: {
 			functionName: 'sendWelcome',
@@ -28,7 +28,7 @@ export const dirtyCameraConversation = (
 	},
 	3: {
 		id: 3,
-		text: ['Oh', { text: name, lang }, 'nice to see you!', 'Come in!'],
+		text: ['Oh', { text: name, lang }, ', now I can see you!', 'Come in!'],
 		callback: {
 			functionName: 'openDoor',
 			args: [Door.Front],

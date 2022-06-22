@@ -58,26 +58,21 @@ export const objectFailConversation = (
 	6: {
 		id: 6,
 		text: ['Open trunk'],
-		children: [7],
+		children: [8],
 		preventSpeak: true,
 		callback: {
 			functionName: 'changeDoor',
 			args: [Door.Trunk],
 		},
 	},
-	7: {
-		id: 7,
-		text: ['Close the door'],
-		children: [8],
-		preventSpeak: true,
-		callback: {
-			functionName: 'closeDoor',
-		},
-	},
 	8: {
 		id: 8,
 		text: ['Are we leaving?'],
 		children: [9, 11],
+		callback: {
+			functionName: 'closeDoor',
+			args: [Door.Trunk],
+		},
 	},
 	9: {
 		id: 9,

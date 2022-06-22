@@ -58,13 +58,19 @@ function Conversation() {
 	} = useSocket();
 
 	const getMessageLabel = (text: MessageText[]) => {
-		return text
+		const cutoff = 7;
+		const label = text
 			.map((t) => {
 				if (typeof t === 'string') {
 					return t;
 				} else return t.text;
 			})
-			.join(' ');
+			.join(' ')
+			.split(' ');
+
+		return `${label.slice(0, cutoff).join(' ')} ${
+			label.length > cutoff ? '...' : ''
+		}`;
 	};
 
 	const clickMessage = (message: Message) => {
@@ -90,7 +96,11 @@ function Conversation() {
 
 						if (newDoor !== door) {
 							closeDoor(door);
-							speak('Switching to the ' + getDoorLabel(newDoor));
+							speak(
+								`Oh, I am sorry. I will open the ${getDoorLabel(
+									newDoor
+								)} for you now.`
+							);
 							openDoor(newDoor);
 						}
 					}
@@ -151,15 +161,6 @@ function Conversation() {
 						label="Name"
 						value={name}
 						onChange={(e) => setName(e.target.value)}
-						required
-					/>
-				</Grid.Col>
-				<Grid.Col span={6}>
-					<TextInput
-						placeholder="Language"
-						label="Language"
-						value={lang}
-						onChange={(e) => setLang(e.target.value)}
 						required
 					/>
 				</Grid.Col>

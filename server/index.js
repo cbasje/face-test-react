@@ -55,8 +55,7 @@ const TRUNK = 't';
 const SIDE = 's';
 
 // Pins
-const PIN_SERVO_FRONT = 3;
-const PIN_SERVO_BACK = 4;
+const PIN_STEPPER_FRONT = 8;
 const PIN_STRIP_SIDE = 5;
 const PIN_STRIP_TRUNK = 2;
 
@@ -73,19 +72,15 @@ const TRUNK_TIMEOUT = 15 * 1000;
 let frontDoor = null;
 let trunk = null;
 let strip = null;
-let colors = ['#8F8', '#F66'];
-
-let savedState = 0;
-let index = 0;
 
 const board = new five.Board({ repl: false });
 board.on('ready', function () {
 	// Define our hardware
-	frontDoor = new five.Servo({
-		pin: 3,
-		range: [0, 180],
-		startAt: 0,
+	frontDoor = new five.Pin({
+		pin: PIN_STEPPER_FRONT,
 	});
+	frontDoor.low();
+
 	trunk = new five.Motor({
 		controller: 'GROVE_I2C_MOTOR_DRIVER',
 		pin: 'A',
@@ -137,7 +132,6 @@ board.on('ready', function () {
 	) => {
 		for (index = 0; index < strip.length; index++) {
 			if (index >= begin && index <= end) {
-				console.log(`Turning on LED ${index}`);
 				strip.pixel(index).color(color);
 				strip.show();
 
@@ -171,7 +165,10 @@ board.on('ready', function () {
 
 		switch (door) {
 			case FRONT_DOOR:
-				frontDoor.to(180);
+				// Button press simulate
+				frontDoor.high();
+				await scheduler.wait(200);
+				frontDoor.low();
 				break;
 			case BACK_DOOR:
 				break;
@@ -189,7 +186,10 @@ board.on('ready', function () {
 
 		switch (door) {
 			case FRONT_DOOR:
-				frontDoor.to(0);
+				// Button press simulate
+				frontDoor.high();
+				await scheduler.wait(200);
+				frontDoor.low();
 				break;
 			case BACK_DOOR:
 				break;

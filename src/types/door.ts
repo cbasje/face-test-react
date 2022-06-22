@@ -7,9 +7,9 @@ export enum Door {
 export const getDoorLabel = (door: Door) => {
 	switch (door) {
 		case Door.Front:
-			return 'front door';
+			return "driver's door";
 		case Door.Back:
-			return 'back door';
+			return 'door to the back seat';
 		case Door.Trunk:
 			return 'trunk';
 	}
