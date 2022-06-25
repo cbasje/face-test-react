@@ -104,10 +104,9 @@ function Conversation() {
 							openDoor(newDoor);
 						}
 					}
-
 					break;
 				case 'closeDoor':
-					openDoor(
+					closeDoor(
 						message.callback.args
 							? (message.callback.args[0] as Door)
 							: door

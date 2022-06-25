@@ -21,12 +21,7 @@ export const introductionConversation = (
 	},
 	2: {
 		id: 2,
-		text: ["Let's get to know each other"],
-		children: [3],
-	},
-	3: {
-		id: 3,
-		text: ['What is your name?'],
+		text: ["Let's get to know each other", 'What is your name?'],
 		children: [4, 5],
 		callback: {
 			functionName: 'sendLoading',
@@ -45,12 +40,7 @@ export const introductionConversation = (
 	6: {
 		id: 6,
 		text: ['Now, you can make your unique gesture to open the door.'],
-		children: [7, 13],
-	},
-	7: {
-		id: 7,
-		text: ['Ok! Please do your gesture now.'],
-		children: [9],
+		children: [9, 13],
 		callback: {
 			functionName: 'sendLoading',
 		},
@@ -100,6 +90,10 @@ export const introductionConversation = (
 			'Do you want to set it up now?',
 		],
 		children: [23, 19, 26],
+		callback: {
+			functionName: 'closeDoor',
+			args: [Door.Front],
+		},
 	},
 	23: {
 		id: 23,
@@ -139,7 +133,7 @@ export const introductionConversation = (
 	},
 	18: {
 		id: 18,
-		text: ["Awesome! Let's get started.", 'Come in!'],
+		text: ["Awesome! Let's get started."],
 		callback: {
 			functionName: 'openDoor',
 			args: [Door.Front],

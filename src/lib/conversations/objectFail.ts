@@ -71,14 +71,12 @@ export const objectFailConversation = (
 		children: [9, 11],
 		callback: {
 			functionName: 'closeDoor',
-			args: [Door.Trunk],
 		},
 	},
 	9: {
 		id: 9,
-		text: ['Yes'],
+		text: ["Okay, let's go!"],
 		children: [10],
-		preventSpeak: true,
 		callback: {
 			functionName: 'openDoor',
 			args: [Door.Front],

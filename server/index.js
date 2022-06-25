@@ -130,16 +130,17 @@ board.on('ready', function () {
 		color = '#FFF',
 		delay = 10
 	) => {
-		for (index = 0; index < strip.length; index++) {
-			if (index >= begin && index <= end) {
-				strip.pixel(index).color(color);
-				strip.show();
+		const direction = begin > end ? -1 : 1;
 
-				await scheduler.wait(delay);
-			} else {
-				// strip.pixel(index).off();
-				// strip.show();
-			}
+		for (
+			index = begin;
+			index * direction < end * direction;
+			index = index + direction
+		) {
+			strip.pixel(index).color(color);
+			strip.show();
+
+			await scheduler.wait(delay);
 		}
 	};
 	const turnOnStrip = (color) => {
@@ -202,9 +203,14 @@ board.on('ready', function () {
 	// Send a welcome to the user
 	const sendWelcome = async (id) => {
 		console.log(`Welcome`);
-		turnOnStrip('#ffffff');
 
-		await scheduler.wait(5000);
+		const delay = 10;
+		turnOnStripPartly(0, NUM_LEDS_SIDE - 1, '#FFF', delay);
+
+		await scheduler.wait(NUM_LEDS_SIDE * delay * 1.25);
+		turnOnStripPartly(strip.length - 1, NUM_LEDS_SIDE, '#FFF', delay);
+
+		await scheduler.wait(2000);
 		turnOffStrip();
 	};
 
